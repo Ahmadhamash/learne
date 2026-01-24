@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>سحابة الأردن - منصة مسارات الحوسبة السحابية المتقدمة</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+
+  <link rel="stylesheet" href="style.css" >
+   <script src="mind.js"></script>
+</head>
+
+<body class="antialiased"
+  x-data="jordanCloudData()"
+  x-init="
+    // Initialize theme
+    if (darkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    // Particles initial
+    const createParticle = () => {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+      particle.style.animationDelay = Math.random() * 2 + 's';
+      document.querySelector('.particles')?.appendChild(particle);
+      setTimeout(() => particle.remove(), 15000);
+    };
+    setInterval(createParticle, 2000);
+    for (let i = 0; i < 5; i++) { setTimeout(createParticle, i * 500); }
+  "
+>
+  <div class="particles fixed inset-0 pointer-events-none z-0"></div>
+
+  <div class="scroll-indicator" id="scroll-indicator"></div>
+
+  <header class="fixed top-0 left-0 right-0 z-50 glassmorphism transition-all duration-300"
+          :class="{ 'py-2': scrolled, 'py-4': !scrolled }"
+          x-data="{ scrolled: false }"
+          @scroll.window="scrolled = window.pageYOffset > 50">
+    <div class="container mx-auto px-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3 space-x-reverse">
+          <div class="w-14 h-14 p-1.5 flex items-center justify-center">
+            <img src='data:image/svg+xml,%3Csvg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg"%3E%3Cdefs%3E%3ClinearGradient id="logoGradient" x1="0%25" y1="0%25" x2="100%25" y2="100%25"%3E%3Cstop offset="0%25" style="stop-color:%23F4436A;" /%3E%3Cstop offset="50%25" style="stop-color:%23FFC107;" /%3E%3Cstop offset="100%25" style="stop-color:%234A88FF;" /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill="none" stroke="url(%23logoGradient)" stroke-width="25" stroke-linecap="round" stroke-linejoin="round" d="M 60 30 A 30 30 0 1 1 60 90 M 60 90 A 30 30 0 0 0 120 90 M 140 90 A 30 30 0 1 0 140 30 M 140 30 A 30 30 0 0 0 80 30"/%3E%3C/svg%3E' alt="Logo">
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-pink-400 to-blue-400 bg-clip-text text-transparent">
+              سحابة الأردن
+            </h1>
+            <p class="text-xs text-gray-400 -mt-1">منصة مسارات الحوسبة السحابية</p>
+          </div>
+        </div>
+
+        <nav class="hidden lg:flex items-center space-x-8 space-x-reverse font-medium">
+          <a href="#home" class="nav-link relative group px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10">
+            <i class="fas fa-home ml-2"></i>الرئيسية
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-pink-400 to-blue-400 transition-all duration-300 group-hover:w-full"></span>
+          </a>
+          <a href="#paths" class="nav-link relative group px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10">
+            <i class="fas fa-route ml-2"></i>المسارات
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-pink-400 to-blue-400 transition-all duration-300 group-hover:w-full"></span>
+          </a>
+          <a href="#labs" class="nav-link relative group px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10">
+            <i class="fas fa-flask ml-2"></i>المختبرات
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-pink-400 to-blue-400 transition-all duration-300 group-hover:w-full"></span>
+          </a>
+          <a href="#community" class="nav-link relative group px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10">
+            <i class="fas fa-users ml-2"></i>المجتمع
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-pink-400 to-blue-400 transition-all duration-300 group-hover:w-full"></span>
+          </a>
+          <a href="#achievements" class="nav-link relative group px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/10">
+            <i class="fas fa-trophy ml-2"></i>الإنجازات
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-pink-400 to-blue-400 transition-all duration-300 group-hover:w-full"></span>
+          </a>
+        </nav>
+
+        <div class="flex items-center space-x-4 space-x-reverse">
+          <button @click="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-700/50 transition-all duration-300">
+            <i :class="darkMode ? 'fas fa-sun text-yellow-400' : 'fas fa-moon text-blue-400'"></i>
+          </button>
+
+          <button @click="showSearchModal = true" class="p-2 rounded-lg hover:bg-gray-700/50 transition-all duration-300 relative">
+            <i class="fas fa-search text-gray-300"></i>
+            <span class="sr-only">بحث</span>
+          </button>
+
+          <template x-if="currentUser">
+            <div class="flex items-center space-x-4 space-x-reverse">
+              <div class="relative">
+                <button @click="showNotifications = !showNotifications"
+                        class="p-2 rounded-lg hover:bg-gray-700/50 transition-all duration-300 relative">
+                  <i class="fas fa-bell text-gray-300"></i>
+                  <span class="notification-badge"
+                        x-text="notifications.filter(n => !n.read).length"
+                        x-show="notifications.filter(n => !n.read).length > 0"></span>
+                </button>
+
+                <div x-show="showNotifications"
+                     @click.outside="showNotifications = false"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                     class="absolute left-0 mt-2 w-96 glassmorphism rounded-2xl shadow-2xl z-50 border border-white/20">
+                  <div class="p-4 border-b border-gray-600/50">
+                    <div class="flex items-center justify-between">
+                      <h3 class="text-lg font-semibold text-white">الإشعارات</h3>
+                      <div class="flex space-x-2 space-x-reverse">
+                        <button @click="markAllNotificationsRead()" class="text-xs text-blue-400 hover:text-blue-300">تمييز الكل كمقروء</button>
+                        <button @click="clearNotifications()" class="text-xs text-red-400 hover:text-red-300">حذف الكل</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="max-h-80 overflow-y-auto">
+                    <template x-for="notification in notifications" :key="notification.id">
+                      <div @click="markNotificationRead(notification.id)"
+                           class="p-4 border-b border-gray-600/30 hover:bg-gray-700/30 cursor-pointer transition-all duration-200"
+                           :class="{ 'bg-blue-500/10 border-l-4 border-blue-500': !notification.read }">
+                        <div class="flex items-start space-x-3 space-x-reverse">
+                          <div class="w-10 h-10 rounded-full flex items-center justify-center"
+                               :class="{
+                                 'bg-blue-500': notification.type === 'info',
+                                 'bg-green-500': notification.type === 'success',
+                                 'bg-pink-500': notification.type === 'achievement',
+                                 'bg-yellow-500': notification.type === 'warning'
+                               }">
+                            <i :class="{
+                              'fas fa-info': notification.type === 'info',
+                              'fas fa-check': notification.type === 'success',
+                              'fas fa-trophy': notification.type === 'achievement',
+                              'fas fa-exclamation': notification.type === 'warning'
+                            }" class="text-white text-sm"></i>
+                          </div>
+                          <div class="flex-1">
+                            <h4 class="font-medium text-white" x-text="notification.title"></h4>
+                            <p class="text-sm text-gray-300 mt-1" x-text="notification.message"></p>
+                            <span class="text-xs text-gray-400" x-text="notification.time"></span>
+                          </div>
+                          <div x-show="!notification.read" class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        </div>
+                      </div>
+                    </template>
+                    <div x-show="notifications.length === 0" class="p-8 text-center">
+                      <i class="fas fa-bell-slash text-4xl text-gray-400 mb-4"></i>
+                      <p class="text-gray-400">لا توجد إشعارات</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hidden md:flex items-center space-x-3 space-x-reverse">
+                <div class="text-center">
+                  <div class="flex items-center space-x-1 space-x-reverse">
+                    <span class="text-xs text-gray-400">المستوى</span>
+                    <span class="text-sm font-bold text-pink-400" x-text="userProgress.level"></span>
+                  </div>
+                  <div class="w-16 h-1 bg-gray-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-pink-500 to-blue-500 transition-all duration-500"
+                         :style="`width: ${(userProgress.currentXP % 500) / 5}%`"></div>
+                  </div>
+                </div>
+                <div class="text-center">
+                  <p class="text-xs text-gray-400">النقاط</p>
+                  <p class="text-sm font-bold text-yellow-400" x-text="userProgress.points.toLocaleString()"></p>
+                </div>
+              </div>
+
+              <div class="relative">
+                <button @click="showUserDashboard = !showUserDashboard"
+                        class="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-blue-500/50 hover:ring-blue-400 transition-all duration-300">
+                  <img :src="currentUser.avatar" :alt="currentUser.name" class="w-full h-full object-cover">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                  <div class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                </button>
+
+                <div x-show="showUserDashboard"
+                     @click.outside="showUserDashboard = false"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                     class="absolute left-0 mt-2 w-80 glassmorphism rounded-2xl shadow-2xl z-50 border border-white/20">
+                  <div class="p-6 border-b border-gray-600/50">
+                    <div class="flex items-center space-x-4 space-x-reverse">
+                      <img :src="currentUser.avatar" :alt="currentUser.name" class="w-16 h-16 rounded-full object-cover ring-2 ring-blue-500/50">
+                      <div class="flex-1">
+                        <h3 class="font-semibold text-white text-lg" x-text="currentUser.name"></h3>
+                        <p class="text-sm text-blue-400" x-text="currentUser.title"></p>
+                        <p class="text-xs text-gray-400" x-text="currentUser.email"></p>
+                        <div class="flex items-center mt-2">
+                          <span class="text-xs text-gray-400 ml-2">عضو منذ:</span>
+                          <span class="text-xs text-gray-300" x-text="new Date(currentUser.joinDate).toLocaleDateString('ar')"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 mt-4">
+                      <div class="text-center">
+                        <div class="text-lg font-bold text-blue-400" x-text="userProgress.completedPaths"></div>
+                        <div class="text-xs text-gray-400">مسارات</div>
+                      </div>
+                      <div class="text-center">
+                        <div class="text-lg font-bold text-green-400" x-text="userProgress.certificates"></div>
+                        <div class="text-xs text-gray-400">شهادات</div>
+                      </div>
+                      <div class="text-center">
+                        <div class="text-lg font-bold text-pink-400" x-text="userProgress.badges"></div>
+                        <div class="text-xs text-gray-400">إنجازات</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-2">
+                    <a href="#dashboard" class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-gray-700/50 rounded-lg transition-all duration-200">
+                      <i class="fas fa-tachometer-alt ml-3 text-blue-400"></i>
+                      <span>لوحة التحكم</span>
+                    </a>
+                    <a href="#profile" class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-gray-700/50 rounded-lg transition-all duration-200">
+                      <i class="fas fa-user-edit ml-3 text-green-400"></i>
+                      <span>تعديل الملف الشخصي</span>
+                    </a>
+                    <a href="#my-paths" class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-gray-700/50 rounded-lg transition-all duration-200">
+                      <i class="fas fa-route ml-3 text-pink-400"></i>
+                      <span>مساراتي</span>
+                    </a>
+                    <a href="#certificates" class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-gray-700/50 rounded-lg transition-all duration-200">
+                      <i class="fas fa-certificate ml-3 text-yellow-400"></i>
+                      <span>شهاداتي</span>
+                    </a>
+                    <button @click="showSettingsModal = true" class="w-full flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-gray-700/50 rounded-lg transition-all duration-200">
+                      <i class="fas fa-cog ml-3 text-gray-400"></i>
+                      <span>الإعدادات</span>
+                    </button>
+                    <hr class="my-2 border-gray-600/50">
+                    <button @click="logout()" class="w-full flex items-center px-4 py-3 text-sm text-red-400 hover:bg-red-500/20 rounded-lg transition-all duration-200">
+                      <i class="fas fa-sign-out-alt ml-3"></i>
+                      <span>تسجيل الخروج</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <template x-if="!currentUser">
+            <div class="flex items-center space-x-3 space-x-reverse">
+              <button @click="showLoginModal = true" class="btn-secondary rounded-xl px-6 py-2 text-sm font-semibold hidden md:block">
+                <i class="fas fa-sign-in-alt ml-2"></i>
+                تسجيل الدخول
+              </button>
+              <button @click="showSignupModal = true" class="btn-primary rounded-xl px-6 py-2 text-sm font-semibold hidden md:block">
+                <i class="fas fa-user-plus ml-2"></i>
+                إنشاء حساب
+              </button>
+            </div>
+          </template>
+
+          <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <i class="fas fa-bars text-xl" x-show="!mobileMenuOpen"></i>
+            <i class="fas fa-times text-xl" x-show="mobileMenuOpen"></i>
+          </button>
+        </div>
+      </div>
+
+      <div x-show="mobileMenuOpen"
+           x-transition:enter="transition ease-out duration-300"
+           x-transition:enter-start="-translate-y-full opacity-0"
+           x-transition:enter-end="translate-y-0 opacity-100"
+           class="lg:hidden mt-4 pb-4 glassmorphism-light rounded-2xl border border-white/20">
+        <div class="flex flex-col space-y-2 px-4 py-2">
+          <a href="#home" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 hover:bg-gray-700/50 rounded-lg transition">
+            <i class="fas fa-home ml-3"></i>الرئيسية
+          </a>
+          <a href="#paths" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 hover:bg-gray-700/50 rounded-lg transition">
+            <i class="fas fa-route ml-3"></i>المسارات
+          </a>
+          <a href="#labs" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 hover:bg-gray-700/50 rounded-lg transition">
+            <i class="fas fa-flask ml-3"></i>المختبرات
+          </a>
+          <a href="#community" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 hover:bg-gray-700/50 rounded-lg transition">
+            <i class="fas fa-users ml-3"></i>المجتمع
+          </a>
+          <a href="#achievements" @click="mobileMenuOpen = false" class="flex items-center py-3 px-4 hover:bg-gray-700/50 rounded-lg transition">
+            <i class="fas fa-trophy ml-3"></i>الإنجازات
+          </a>
+          <div class="border-t border-gray-600 pt-4 mt-4" x-show="!currentUser">
+            <button @click="showLoginModal = true; mobileMenuOpen = false" class="w-full mb-2 py-3 text-center bg-transparent border border-blue-500 text-blue-500 rounded-lg">
+              <i class="fas fa-sign-in-alt ml-2"></i>تسجيل الدخول
+            </button>
+            <button @click="showSignupModal = true; mobileMenuOpen = false" class="w-full py-3 text-center bg-blue-500 text-white rounded-lg">
+              <i class="fas fa-user-plus ml-2"></i>إنشاء حساب
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div x-show="showSearchModal"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 pt-20">
+    <div @click.outside="showSearchModal = false" class="glassmorphism rounded-2xl p-6 w-full max-w-3xl border border-white/20">
+      <div class="flex items-center mb-6">
+        <i class="fas fa-search text-gray-400 text-xl ml-3"></i>
+        <input type="text" x-model="searchQuery" placeholder="ابحث عن المسارات أو المهارات السحابية..."
+               class="flex-1 bg-transparent text-white text-lg focus:outline-none placeholder-gray-400"
+               @keydown.escape="showSearchModal = false"
+               x-ref="searchInput">
+        <button @click="showSearchModal = false" class="text-gray-400 hover:text-white ml-3 p-2 hover:bg-gray-700/50 rounded-lg transition">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mb-6">
+        <span class="text-sm text-gray-400">فلترة سريعة:</span>
+        <button @click="searchQuery='AWS'" class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm hover:bg-blue-500/30 transition">AWS</button>
+        <button @click="searchQuery='Azure'" class="px-3 py-1 bg-pink-500/20 text-pink-400 rounded-full text-sm hover:bg-pink-500/30 transition">Azure</button>
+        <button @click="searchQuery='GCP'" class="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm hover:bg-yellow-500/30 transition">GCP</button>
+        <button @click="searchQuery='Kubernetes'" class="px-3 py-1 bg-indigo-500/20 text-indigo-400 rounded-full text-sm hover:bg-indigo-500/30 transition">Kubernetes</button>
+        <button @click="searchQuery='DevOps'" class="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-sm hover:bg-emerald-500/30 transition">DevOps</button>
+      </div>
+
+      <div x-show="searchQuery.length > 0">
+        <h3 class="text-white font-semibold mb-4 flex items-center">
+          <i class="fas fa-search-plus ml-2"></i>
+          نتائج البحث
+        </h3>
+        <div class="space-y-3 max-h-96 overflow-y-auto">
+          <template x-for="path in searchPaths()" :key="path.id">
+            <div @click="currentPath = path; showPathModal = true; showSearchModal = false"
+                 class="flex items-center p-4 hover:bg-gray-700/30 rounded-xl cursor-pointer transition-all duration-200 border border-transparent hover:border-white/10">
+              <img :src="path.image" :alt="path.title" class="w-16 h-16 rounded-xl object-cover ml-4">
+              <div class="flex-1">
+                <h4 class="text-white font-medium text-lg" x-text="path.title"></h4>
+                <p class="text-sm text-gray-400 mt-1" x-text="path.description"></p>
+                <div class="flex items-center mt-2 space-x-4 space-x-reverse">
+                  <span class="text-xs text-blue-400" x-text="path.category"></span>
+                  <span class="text-xs text-gray-500">•</span>
+                  <span class="text-xs text-gray-400" x-text="path.duration"></span>
+                  <span class="text-xs text-gray-500">•</span>
+                  <div class="flex items-center">
+                    <i class="fas fa-star text-yellow-400 text-xs ml-1"></i>
+                    <span class="text-xs text-gray-400" x-text="path.rating"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="text-left">
+                <div class="text-xl font-bold text-blue-400" x-text="path.price + ' د.أ'"></div>
+                <div class="text-sm text-gray-500 line-through" x-text="path.originalPrice + ' د.أ'"></div>
+              </div>
+            </div>
+          </template>
+
+          <div x-show="searchPaths().length === 0" class="text-center py-12">
+            <i class="fas fa-search-minus text-4xl text-gray-400 mb-4"></i>
+            <p class="text-gray-400 text-lg">لم نجد نتائج مطابقة لبحثك</p>
+            <p class="text-gray-500 text-sm mt-2">جرب كلمات مفتاحية أخرى أو تصفح مساراتنا السحابية</p>
+          </div>
+        </div>
+      </div>
+
+      <div x-show="searchQuery.length === 0">
+        <h3 class="text-white font-semibold mb-4 flex items-center">
+          <i class="fas fa-fire ml-2"></i>
+          عمليات البحث الشائعة
+        </h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <h4 class="text-sm text-gray-400 font-medium">المهارات</h4>
+            <div class="space-y-1">
+              <button @click="searchQuery = 'AWS'; $refs.searchInput.focus()" class="block text-left text-blue-400 hover:text-blue-300 text-sm transition">AWS</button>
+              <button @click="searchQuery = 'Azure'; $refs.searchInput.focus()" class="block text-left text-pink-400 hover:text-pink-300 text-sm transition">Azure</button>
+              <button @click="searchQuery = 'Kubernetes'; $refs.searchInput.focus()" class="block text-left text-indigo-400 hover:text-indigo-300 text-sm transition">Kubernetes</button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h4 class="text-sm text-gray-400 font-medium">المجالات</h4>
+            <div class="space-y-1">
+              <button @click="searchQuery = 'DevOps'; $refs.searchInput.focus()" class="block text-left text-emerald-400 hover:text-emerald-300 text-sm transition">DevOps</button>
+              <button @click="searchQuery = 'Terraform'; $refs.searchInput.focus()" class="block text-left text-green-400 hover:text-green-300 text-sm transition">Terraform</button>
+              <button @click="searchQuery = 'Cloud Security'; $refs.searchInput.focus()" class="block text-left text-pink-400 hover:text-pink-300 text-sm transition">Cloud Security</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="relative z-10">
+    <section id="home" class="pt-32 pb-20 md:pt-40 md:pb-32 text-center relative overflow-hidden hero-gradient min-h-screen flex items-center">
+      <div class="absolute inset-0 overflow-hidden">
+        <div class="floating-element absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-500/20 to-pink-500/20 rounded-full blur-2xl"></div>
+        <div class="floating-element absolute top-40 right-20 w-48 h-48 bg-gradient-to-r from-pink-500/20 to-pink-500/20 rounded-full blur-3xl" style="animation-delay: -2s;"></div>
+        <div class="floating-element absolute bottom-20 left-1/4 w-24 h-24 bg-gradient-to-r from-yellow-500/20 to-blue-500/20 rounded-full blur-xl" style="animation-delay: -4s;"></div>
+        <div class="floating-element absolute top-1/3 right-1/4 w-16 h-16 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full blur-lg" style="animation-delay: -1s;"></div>
+      </div>
+      <div class="container mx-auto px-6 relative z-10">
+        <div class="max-w-6xl mx-auto">
+          <div data-aos="fade-up" data-aos-duration="1000">
+            <h2 class="text-5xl md:text-8xl font-black text-white leading-tight mb-8">
+              اكتشف مسارك نحو
+              <br>
+              <span class="bg-gradient-to-r from-blue-400 via-pink-500 to-yellow-400 bg-clip-text text-transparent animate-pulse">
+                التميز السحابي
+              </span>
+              <br>
+              في الأردن
+            </h2>
+          </div>
+          <div data-aos="fade-up" data-aos-delay="200">
+            <p class="text-xl md:text-3xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
+              منصة مسارات سحابية متكاملة تجمع بين أحدث التقنيات والتطبيق العملي لإعدادك لسوق العمل.
+            </p>
+          </div>
+          <div data-aos="fade-up" data-aos-delay="400" class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-8 md:space-x-reverse mb-20">
+            <button @click="currentUser ? window.location.href='#paths' : showSignupModal = true"
+                    class="btn-gradient rounded-2xl px-12 py-5 text-xl font-bold pulse-glow group">
+              <i class="fas fa-rocket ml-3 group-hover:animate-bounce"></i>
+              <span x-text="currentUser ? 'استكشف المسارات' : 'ابدأ رحلتك المجانية'"></span>
+            </button>
+            <button @click="$el.scrollIntoView({behavior: 'smooth'}); document.querySelector('#paths').scrollIntoView({behavior: 'smooth'})"
+                    class="btn-secondary rounded-2xl px-12 py-5 text-xl font-bold group">
+              <i class="fas fa-play ml-3 group-hover:animate-pulse"></i>
+              تصفح المسارات
+            </button>
+          </div>
+
+          <div data-aos="fade-up" data-aos-delay="600" class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+            <div class="glassmorphism rounded-2xl p-8 text-center card-hover group">
+              <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-pink-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <i class="fas fa-users text-white text-2xl"></i>
+              </div>
+              <div class="text-4xl font-bold text-blue-400 mb-2" x-data="{ count: 0 }" x-init="setInterval(() => count < 8500 ? count += 50 : null, 20)" x-text="count + '+'"></div>
+              <div class="text-gray-300 text-sm font-medium">متعلم نشط</div>
+            </div>
+            <div class="glassmorphism rounded-2xl p-8 text-center card-hover group">
+              <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <i class="fas fa-route text-white text-2xl"></i>
+              </div>
+              <div class="text-4xl font-bold text-green-400 mb-2" x-data="{ count: 0 }" x-init="setInterval(() => count < 12 ? count += 1 : null, 100)" x-text="count + '+'"></div>
+              <div class="text-gray-300 text-sm font-medium">مسار سحابي</div>
+            </div>
+            <div class="glassmorphism rounded-2xl p-8 text-center card-hover group">
+              <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-pink-500 to-yellow-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <i class="fas fa-flask text-white text-2xl"></i>
+              </div>
+              <div class="text-4xl font-bold text-pink-400 mb-2" x-data="{ count: 0 }" x-init="setInterval(() => count < 60 ? count += 2 : null, 30)" x-text="count + '+'"></div>
+              <div class="text-gray-300 text-sm font-medium">مختبر تفاعلي</div>
+            </div>
+            <div class="glassmorphism rounded-2xl p-8 text-center card-hover group">
+              <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <i class="fas fa-trophy text-white text-2xl"></i>
+              </div>
+              <div class="text-4xl font-bold text-yellow-400 mb-2" x-data="{ count: 90 }" x-init="setInterval(() => count < 98 ? count += 0.1 : null, 100)" x-text="count.toFixed(1) + '%'"></div>
+              <div class="text-gray-300 text-sm font-medium">معدل النجاح</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section x-show="currentUser" class="py-20 bg-gray-900/30 relative overflow-hidden">
+      <div class="container mx-auto px-6">
+        <div data-aos="fade-up" class="text-center mb-16">
+          <h3 class="text-4xl md:text-6xl font-bold text-white mb-6">لوحة التحكم الشخصية</h3>
+          <p class="text-xl text-gray-400 max-w-2xl mx-auto">تتبع تقدمك السحابي وإنجازاتك</p>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="200" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          <div class="glassmorphism rounded-2xl p-8 text-center card-hover relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-pink-500"></div>
+            <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+              <i class="fas fa-star text-white text-2xl"></i>
+              <div class="absolute inset-0 rounded-full animate-ping bg-blue-500 opacity-20"></div>
+            </div>
+            <div class="text-3xl font-bold text-blue-400 mb-2" x-text="userProgress.currentXP.toLocaleString()"></div>
+            <div class="text-gray-300 text-sm mb-4">نقاط الخبرة</div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+              <div class="bg-gradient-to-r from-blue-500 to-pink-500 h-2 rounded-full transition-all duration-1000"
+                   :style="`width: ${(userProgress.currentXP % 500) / 5}%`"></div>
+            </div>
+            <div class="text-xs text-gray-400 mt-2" x-text="`${userProgress.nextLevelXP - userProgress.currentXP} نقطة للمستوى التالي`"></div>
+          </div>
+
+          <div class="glassmorphism rounded-2xl p-8 text-center card-hover relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-red-500"></div>
+            <div class="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+              <i class="fas fa-fire text-white text-2xl animate-pulse"></i>
+            </div>
+            <div class="text-3xl font-bold text-orange-400 mb-2" x-text="userProgress.streak"></div>
+            <div class="text-gray-300 text-sm">يوم متتالي</div>
+            <div class="mt-4">
+              <div class="flex justify-center space-x-1 space-x-reverse">
+                <template x-for="i in 7" :key="i">
+                  <div class="w-3 h-3 rounded-full" :class="i <= userProgress.streak ? 'bg-orange-500' : 'bg-gray-600'"></div>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <div class="glassmorphism rounded-2xl p-8 text-center card-hover relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-teal-500"></div>
+            <div class="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <i class="fas fa-route text-white text-2xl"></i>
+            </div>
+            <div class="text-3xl font-bold text-green-400 mb-2" x-text="userProgress.completedPaths"></div>
+            <div class="text-gray-300 text-sm">مسار مكتمل</div>
+            <div class="text-xs text-gray-400 mt-2" x-text="`من أصل ${learningPaths.length} مسار`"></div>
+          </div>
+
+          <div class="glassmorphism rounded-2xl p-8 text-center card-hover relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 to-orange-500"></div>
+            <div class="w-20 h-20 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <i class="fas fa-crown text-white text-2xl"></i>
+            </div>
+            <div class="text-3xl font-bold text-yellow-400 mb-2" x-text="'#' + userProgress.rank"></div>
+            <div class="text-gray-300 text-sm">الترتيب العام</div>
+            <div class="text-xs text-green-400 mt-2">↑ تحسن بـ 3 مراكز</div>
+          </div>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="400" class="glassmorphism rounded-2xl p-8 mb-16">
+          <div class="flex items-center justify-between mb-6">
+            <h4 class="text-2xl font-bold text-white flex items-center">
+              <i class="fas fa-clock ml-3 text-blue-400"></i>
+              النشاط الأخير
+            </h4>
+            <button class="text-blue-400 hover:text-blue-300 text-sm font-medium">
+              عرض الكل <i class="fas fa-arrow-left mr-2"></i>
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-6 bg-gray-700/30 rounded-xl hover:bg-gray-700/50 transition-all duration-200">
+              <div class="flex items-center">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center ml-4">
+                  <i class="fas fa-check text-white"></i>
+                </div>
+                <div>
+                  <h5 class="text-white font-semibold text-lg">أكملت درس "VPC متقدم على AWS"</h5>
+                  <p class="text-gray-400 text-sm">مسار AWS مهندس حلول • +50 نقطة خبرة</p>
+                </div>
+              </div>
+              <div class="text-left">
+                <span class="text-gray-400 text-sm">منذ ساعة</span>
+                <div class="text-green-400 text-xs">+50 XP</div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-6 bg-gray-700/30 rounded-xl hover:bg-gray-700/50 transition-all duration-200">
+              <div class="flex items-center">
+                <div class="w-12 h-12 bg-gradient-to-r from-pink-500 to-yellow-500 rounded-full flex items-center justify-center ml-4">
+                  <i class="fas fa-flask text-white"></i>
+                </div>
+                <div>
+                  <h5 class="text-white font-semibold text-lg">بدأت مختبر "نشر على EKS"</h5>
+                  <p class="text-gray-400 text-sm">المختبرات السحابية • قيد التقدم</p>
+                </div>
+              </div>
+              <div class="text-left">
+                <span class="text-gray-400 text-sm">منذ 3 ساعات</span>
+                <div class="text-blue-400 text-xs">جاري العمل</div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-6 bg-gray-700/30 rounded-xl hover:bg-gray-700/50 transition-all duration-200">
+              <div class="flex items-center">
+                <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center ml-4">
+                  <i class="fas fa-trophy text-white"></i>
+                </div>
+                <div>
+                  <h5 class="text-white font-semibold text-lg">حصلت على إنجاز "المبتدئ السحابي"</h5>
+                  <p class="text-gray-400 text-sm">إكمال أول مسار سحابي • +200 نقطة خبرة</p>
+                </div>
+              </div>
+              <div class="text-left">
+                <span class="text-gray-400 text-sm">منذ يوم</span>
+                <div class="text-yellow-400 text-xs">إنجاز!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="600" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="glassmorphism rounded-2xl p-8">
+            <h4 class="text-2xl font-bold text-white mb-6 flex items-center">
+              <i class="fas fa-target ml-3 text-green-400"></i>
+              الأهداف الأسبوعية
+            </h4>
+            <div class="space-y-6">
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-white font-medium">إكمال 3 دروس</span>
+                  <span class="text-green-400 font-bold">2/3</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 67%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-white font-medium">قضاء 8 ساعات في التعلم</span>
+                  <span class="text-blue-400 font-bold">6/8</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-white font-medium">إنجاز مختبر واحد</span>
+                  <span class="text-yellow-400 font-bold">0/1</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glassmorphism rounded-2xl p-8">
+            <h4 class="text-2xl font-bold text-white mb-6 flex items-center">
+              <i class="fas fa-chart-line ml-3 text-pink-400"></i>
+              تطور المهارات
+            </h4>
+            <div class="space-y-6">
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <div class="flex items-center">
+                    <span class="w-3 h-3 bg-blue-500 rounded-full ml-3"></span>
+                    <span class="text-white font-medium">AWS</span>
+                  </div>
+                  <span class="text-blue-400 font-bold">82%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 82%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <div class="flex items-center">
+                    <span class="w-3 h-3 bg-green-500 rounded-full ml-3"></span>
+                    <span class="text-white font-medium">Kubernetes</span>
+                  </div>
+                  <span class="text-green-400 font-bold">68%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 68%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <div class="flex items-center">
+                    <span class="w-3 h-3 bg-pink-500 rounded-full ml-3"></span>
+                    <span class="text-white font-medium">Terraform</span>
+                  </div>
+                  <span class="text-pink-400 font-bold">55%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 55%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="paths" class="py-20 bg-gray-900/50 relative overflow-hidden">
+      <div class="container mx-auto px-6">
+        <div data-aos="fade-up" class="text-center mb-16">
+          <h3 class="text-4xl md:text-6xl font-bold text-white mb-6">مسارات الحوسبة السحابية المتقدمة</h3>
+          <p class="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+            مسارات شاملة ومتدرجة في AWS وAzure وGCP وKubernetes وDevOps وTerraform.
+          </p>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="200" class="flex justify-center mb-16">
+          <div class="glassmorphism rounded-2xl p-3 border border-white/20">
+            <div class="flex flex-wrap gap-2">
+              <button class="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-pink-500 text-white font-medium transition-all duration-300 hover:scale-105">
+                <i class="fas fa-th-large ml-2"></i>جميع المسارات
+              </button>
+              <button class="px-6 py-3 rounded-xl hover:bg-gray-700/50 transition-all duration-300 hover:scale-105">
+                <i class="fab fa-aws ml-2"></i>AWS
+              </button>
+              <button class="px-6 py-3 rounded-xl hover:bg-gray-700/50 transition-all duration-300 hover:scale-105">
+                <i class="fas fa-cloud ml-2"></i>Azure
+              </button>
+              <button class="px-6 py-3 rounded-xl hover:bg-gray-700/50 transition-all duration-300 hover:scale-105">
+                <i class="fab fa-google ml-2"></i>GCP
+              </button>
+              <button class="px-6 py-3 rounded-xl hover:bg-gray-700/50 transition-all duration-300 hover:scale-105">
+                <i class="fas fa-cubes ml-2"></i>Kubernetes
+              </button>
+              <button class="px-6 py-3 rounded-xl hover:bg-gray-700/50 transition-all duration-300 hover:scale-105">
+                <i class="fas fa-gears ml-2"></i>DevOps/Terraform
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <template x-for="(path, index) in learningPaths" :key="path.id">
+            <div :data-aos="'fade-up'" :data-aos-delay="index * 100" class="path-card group">
+              <div class="relative overflow-hidden h-64">
+                <img :src="path.image" :alt="path.title" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                <div class="absolute top-4 left-4 flex space-x-2 space-x-reverse">
+                  <span class="px-3 py-1 bg-blue-500/90 backdrop-blur-sm text-white rounded-full text-xs font-medium" x-text="path.category"></span>
+                  <span class="px-3 py-1 bg-black/50 backdrop-blur-sm text-white rounded-full text-xs font-medium" x-text="path.level"></span>
+                </div>
+                <div class="absolute top-4 right-4">
+                  <div class="flex items-center bg-black/50 backdrop-blur-sm rounded-full px-3 py-1">
+                    <i class="fas fa-star text-yellow-400 text-sm ml-1"></i>
+                    <span class="text-white text-sm font-medium" x-text="path.rating"></span>
+                  </div>
+                </div>
+                <div x-show="path.enrolled" class="absolute bottom-4 right-4">
+                  <span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                    <i class="fas fa-check ml-1"></i>مسجل
+                  </span>
+                </div>
+                <div class="absolute bottom-4 left-4">
+                  <div class="bg-white/90 backdrop-blur-sm rounded-xl p-3">
+                    <div class="text-2xl font-bold text-gray-900" x-text="path.price + ' د.أ'"></div>
+                    <div class="text-sm text-gray-500 line-through" x-text="path.originalPrice + ' د.أ'"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-8">
+                <div class="mb-6">
+                  <h4 class="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors duration-300" x-text="path.title"></h4>
+                  <p class="text-gray-300 leading-relaxed" x-text="path.description"></p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+                  <div class="flex items-center text-gray-400">
+                    <i class="fas fa-clock ml-2 text-blue-400"></i>
+                    <span x-text="path.duration"></span>
+                  </div>
+                  <div class="flex items-center text-gray-400">
+                    <i class="fas fa-users ml-2 text-green-400"></i>
+                    <span x-text="path.students.toLocaleString() + ' طالب'"></span>
+                  </div>
+                  <div class="flex items-center text-gray-400">
+                    <i class="fas fa-book ml-2 text-pink-400"></i>
+                    <span x-text="path.courses + ' دورة'"></span>
+                  </div>
+                  <div class="flex items-center text-gray-400">
+                    <i class="fas fa-project-diagram ml-2 text-yellow-400"></i>
+                    <span x-text="path.projects + ' مشروع'"></span>
+                  </div>
+                </div>
+
+                <div class="mb-6">
+                  <h5 class="text-white font-semibold mb-3">المهارات المكتسبة:</h5>
+                  <div class="flex flex-wrap gap-2">
+                    <template x-for="skill in path.skills.slice(0, 4)" :key="skill">
+                      <span class="px-3 py-1 bg-gray-700/50 text-gray-300 rounded-full text-xs font-medium border border-gray-600/50" x-text="skill"></span>
+                    </template>
+                    <span x-show="path.skills.length > 4" class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-medium" x-text="'+' + (path.skills.length - 4) + ' المزيد'"></span>
+                  </div>
+                </div>
+
+                <div class="mb-6">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-white font-semibold">مستوى الصعوبة:</span>
+                    <div class="skill-level">
+                      <template x-for="(star, i) in getDifficultyStars(path.difficulty)" :key="i">
+                        <div class="skill-dot" :class="{ 'active': star }"></div>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center mb-6">
+                  <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-pink-500 rounded-full flex items-center justify-center ml-4">
+                    <span class="text-white text-sm font-bold" x-text="path.instructor.charAt(0)"></span>
+                  </div>
+                  <div>
+                    <div class="text-white font-medium" x-text="path.instructor"></div>
+                    <div class="text-gray-400 text-sm">مدرب معتمد</div>
+                  </div>
+                </div>
+
+                <template x-if="path.enrolled && path.progress > 0">
+                  <div class="mb-6">
+                    <div class="flex justify-between text-sm text-gray-400 mb-3">
+                      <span>تقدم المسار</span>
+                      <span x-text="calculateProgress(path) + '%'"></span>
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" :style="`width: ${calculateProgress(path)}%`"></div>
+                    </div>
+                  </div>
+                </template>
+
+                <div class="flex space-x-4 space-x-reverse">
+                  <button @click="currentPath = path; showPathModal = true"
+                          class="flex-1 btn-primary rounded-xl py-4 font-semibold text-lg group-hover:scale-105 transition-all duration-300">
+                    <template x-if="path.enrolled && path.progress > 0">
+                      <span><i class="fas fa-play ml-2"></i>متابعة التعلم</span>
+                    </template>
+                    <template x-if="path.enrolled && path.progress === 0">
+                      <span><i class="fas fa-rocket ml-2"></i>بدء المسار</span>
+                    </template>
+                    <template x-if="!path.enrolled">
+                      <span><i class="fas fa-plus ml-2"></i>الانضمام للمسار</span>
+                    </template>
+                  </button>
+                  <button class="px-6 py-4 btn-secondary rounded-xl font-semibold hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="800" class="text-center mt-16">
+          <button class="btn-secondary rounded-2xl px-12 py-4 text-lg font-semibold hover:scale-105 transition-all duration-300">
+            <i class="fas fa-th-large ml-2"></i>
+            <span x-text="`عرض جميع المسارات (${learningPaths.length} مسار)`"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="labs" class="py-20 relative overflow-hidden">
+      <div class="container mx-auto px-6">
+        <div data-aos="fade-up" class="text-center mb-16">
+          <h3 class="text-4xl md:text-6xl font-bold text-white mb-6">المختبرات التفاعلية</h3>
+          <p class="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+            بيئات سحابية جاهزة لتطبيق ما تعلمته عملياً دون إعداد معقد.
+          </p>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="200" class="flex justify-center mb-12">
+          <div class="glassmorphism rounded-2xl p-3 border border-white/20">
+            <div class="flex flex-wrap gap-2">
+              <button class="px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-yellow-500 text-white font-medium transition-all duration-300">
+                <i class="fas fa-flask ml-2"></i>جميع المختبرات
+              </button>
+              <button class="px-6 py-3 rounded-xl hover:bg-gray-700/50 transition-all duration-300">
+                <i class="fab fa-aws ml-2"></i>AWS
+              </button>
+              <button class="px-6 py-3 rounded-xl hover:bg-gray-700/50 transition-all duration-300">
+                <i class="fas fa-cubes ml-2"></i>Kubernetes
+              </button>
+              <button class="px-6 py-3 rounded-xl hover:bg-gray-700/50 transition-all duration-300">
+                <i class="fas fa-diagram-project ml-2"></i>Terraform
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <template x-for="(lab, index) in labs" :key="lab.id">
+            <div :data-aos="'fade-up'" :data-aos-delay="index * 100" class="glassmorphism rounded-2xl overflow-hidden card-hover group border border-white/10">
+              <div class="p-8 text-center relative">
+                <div class="w-20 h-20 bg-gradient-to-r rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-all duration-300"
+                     :class="lab.color">
+                  <i :class="lab.icon + ' text-white text-3xl'"></i>
+                </div>
+                <div x-show="lab.completed" class="absolute top-4 right-4">
+                  <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check text-white text-sm"></i>
+                  </div>
+                </div>
+                <h4 class="text-2xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors duration-300" x-text="lab.title"></h4>
+                <p class="text-gray-300 leading-relaxed mb-6" x-text="lab.description"></p>
+
+                <div class="flex justify-between items-center text-sm text-gray-400 mb-6">
+                  <div class="flex items-center">
+                    <i class="fas fa-clock ml-1 text-blue-400"></i>
+                    <span x-text="formatDuration(lab.duration)"></span>
+                  </div>
+                  <div class="flex items-center">
+                    <i class="fas fa-signal ml-1 text-green-400"></i>
+                    <span x-text="lab.level"></span>
+                  </div>
+                </div>
+
+                <div class="mb-6">
+                  <h5 class="text-white font-semibold mb-3 text-sm">التقنيات المستخدمة:</h5>
+                  <div class="flex flex-wrap gap-2 justify-center">
+                    <template x-for="tech in lab.technologies" :key="tech">
+                      <span class="px-3 py-1 bg-gray-700/50 text-gray-300 rounded-full text-xs font-medium border border-gray-600/50" x-text="tech"></span>
+                    </template>
+                  </div>
+                </div>
+
+                <template x-if="lab.started && !lab.completed">
+                  <div class="mb-6">
+                    <div class="flex justify-between text-xs text-gray-400 mb-2">
+                      <span>التقدم</span>
+                      <span>3/5 خطوات</span>
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width: 60%"></div>
+                    </div>
+                  </div>
+                </template>
+
+                <button @click="startLab(lab.id)"
+                        class="w-full btn-primary rounded-xl py-4 font-semibold text-lg group-hover:scale-105 transition-all duration-300"
+                        :class="{ 'btn-secondary': lab.completed }">
+                  <i class="fas ml-2" :class="{
+                    'fa-flask': !lab.completed && !lab.started,
+                    'fa-play': lab.started && !lab.completed,
+                    'fa-redo': lab.completed
+                  }"></i>
+                  <span x-text="lab.completed ? 'إعادة المختبر' : lab.started ? 'متابعة المختبر' : 'بدء المختبر'"></span>
+                </button>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="600" class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-code text-white text-2xl"></i>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">محرر أكواد متقدم</h4>
+            <p class="text-gray-400">محرر أكواد مدمج لملفات IaC و YAML وغيرها</p>
+          </div>
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-terminal text-white text-2xl"></i>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">طرفية تفاعلية</h4>
+            <p class="text-gray-400">تشغيل أوامر Terraform و kubectl و AWS CLI</p>
+          </div>
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-cloud text-white text-2xl"></i>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">بيئة سحابية</h4>
+            <p class="text-gray-400">بيئة تطوير سحابية جاهزة دون تثبيت</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="achievements" class="py-20 bg-gray-900/50 relative overflow-hidden">
+      <div class="container mx-auto px-6">
+        <div data-aos="fade-up" class="text-center mb-16">
+          <h3 class="text-4xl md:text-6xl font-bold text-white mb-6">الإنجازات والشارات</h3>
+          <p class="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+            اكسب الشارات السحابية مع كل خطوة في رحلتك وتنافس في لوحة الصدارة.
+          </p>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="200" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          <template x-for="(achievement, index) in achievements" :key="achievement.id">
+            <div :data-aos="'fade-up'" :data-aos-delay="index * 100"
+                 class="glassmorphism rounded-2xl p-8 text-center card-hover group relative overflow-hidden"
+                 :class="{ 'ring-2 ring-yellow-500/50': achievement.unlocked }">
+              <div class="absolute top-4 right-4">
+                <div class="w-6 h-6 rounded-full flex items-center justify-center"
+                     :class="achievement.unlocked ? 'bg-green-500' : 'bg-gray-600'">
+                  <i class="fas text-white text-xs" :class="achievement.unlocked ? 'fa-check' : 'fa-lock'"></i>
+                </div>
+              </div>
+              <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center group-hover:scale-110 transition-all duration-300"
+                   :class="achievement.unlocked ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gray-600'">
+                <i :class="achievement.icon + ' text-white text-2xl'"></i>
+              </div>
+              <h4 class="text-xl font-bold text-white mb-3" x-text="achievement.title"></h4>
+              <p class="text-gray-400 text-sm leading-relaxed" x-text="achievement.description"></p>
+              <div x-show="achievement.unlocked" class="absolute inset-0 pointer-events-none">
+                <div class="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-2xl animate-pulse"></div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="400" class="glassmorphism rounded-2xl p-8 mb-16">
+          <div class="flex items-center justify-between mb-8">
+            <h4 class="text-3xl font-bold text-white flex items-center">
+              <i class="fas fa-trophy ml-3 text-yellow-400"></i>
+              لوحة الصدارة
+            </h4>
+            <div class="flex space-x-2 space-x-reverse">
+              <button class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium">هذا الشهر</button>
+              <button class="px-4 py-2 hover:bg-gray-700/50 text-gray-400 rounded-lg text-sm font-medium transition">كل الأوقات</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <h5 class="text-xl font-bold text-white mb-6">أفضل المتعلمين</h5>
+              <div class="space-y-4">
+                <div class="flex items-center p-4 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-xl border border-yellow-500/30">
+                  <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center ml-4">
+                    <span class="text-white font-bold">1</span>
+                  </div>
+                  <img src="https://placehold.co/40x40/3B82F6/FFFFFF?text=أ" class="w-10 h-10 rounded-full ml-3" alt="">
+                  <div class="flex-1">
+                    <div class="text-white font-semibold">أحمد محمد</div>
+                    <div class="text-yellow-400 text-sm">3,245 نقطة</div>
+                  </div>
+                  <i class="fas fa-crown text-yellow-400 text-xl"></i>
+                </div>
+                <div class="flex items-center p-4 bg-gradient-to-r from-gray-400/20 to-gray-600/20 rounded-xl border border-gray-400/30">
+                  <div class="w-12 h-12 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center ml-4">
+                    <span class="text-white font-bold">2</span>
+                  </div>
+                  <img src="https://placehold.co/40x40/EC4899/FFFFFF?text=ف" class="w-10 h-10 rounded-full ml-3" alt="">
+                  <div class="flex-1">
+                    <div class="text-white font-semibold">فاطمة أحمد</div>
+                    <div class="text-gray-400 text-sm">2,987 نقطة</div>
+                  </div>
+                  <i class="fas fa-medal text-gray-400 text-xl"></i>
+                </div>
+                <div class="flex items-center p-4 bg-gradient-to-r from-orange-600/20 to-yellow-600/20 rounded-xl border border-orange-600/30">
+                  <div class="w-12 h-12 bg-gradient-to-r from-orange-600 to-yellow-600 rounded-full flex items-center justify-center ml-4">
+                    <span class="text-white font-bold">3</span>
+                  </div>
+                  <img src="https://placehold.co/40x40/10B981/FFFFFF?text=م" class="w-10 h-10 rounded-full ml-3" alt="">
+                  <div class="flex-1">
+                    <div class="text-white font-semibold">محمد علي</div>
+                    <div class="text-orange-400 text-sm">2,756 نقطة</div>
+                  </div>
+                  <i class="fas fa-award text-orange-400 text-xl"></i>
+                </div>
+
+                <template x-if="currentUser">
+                  <div class="flex items-center p-4 bg-blue-500/20 rounded-xl border border-blue-500/30">
+                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center ml-4">
+                      <span class="text-white font-bold" x-text="userProgress.rank"></span>
+                    </div>
+                    <img :src="currentUser.avatar" :alt="currentUser.name" class="w-10 h-10 rounded-full ml-3">
+                    <div class="flex-1">
+                      <div class="text-white font-semibold" x-text="currentUser.name + ' (أنت)'"></div>
+                      <div class="text-blue-400 text-sm" x-text="userProgress.points.toLocaleString() + ' نقطة'"></div>
+                    </div>
+                    <i class="fas fa-user text-blue-400 text-xl"></i>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <div>
+              <h5 class="text-xl font-bold text-white mb-6">إحصائيات الشهر</h5>
+              <div class="space-y-6">
+                <div class="text-center p-6 glassmorphism-light rounded-xl">
+                  <div class="text-3xl font-bold text-blue-400 mb-2">847</div>
+                  <div class="text-gray-400">مسار مكتمل</div>
+                </div>
+                <div class="text-center p-6 glassmorphism-light rounded-xl">
+                  <div class="text-3xl font-bold text-green-400 mb-2">2,392</div>
+                  <div class="text-gray-400">مختبر منجز</div>
+                </div>
+                <div class="text-center p-6 glassmorphism-light rounded-xl">
+                  <div class="text-3xl font-bold text-pink-400 mb-2">564</div>
+                  <div class="text-gray-400">شهادة جديدة</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="600" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-gamepad text-white text-2xl"></i>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">تعلم تفاعلي</h4>
+            <p class="text-gray-400">نظام نقاط وشارات يجعل التعلم ممتعاً</p>
+          </div>
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-users text-white text-2xl"></i>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">تنافس صحي</h4>
+            <p class="text-gray-400">تنافس مع زملائك في لوحة الصدارة</p>
+          </div>
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-certificate text-white text-2xl"></i>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">شهادات معتمدة</h4>
+            <p class="text-gray-400">احصل على شهادات تعزز سيرتك الذاتية</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="community" class="py-20 relative overflow-hidden">
+      <div class="container mx-auto px-6">
+        <div data-aos="fade-up" class="text-center mb-16">
+          <h3 class="text-4xl md:text-6xl font-bold text-white mb-6">المجتمع التفاعلي</h3>
+          <p class="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+            انضم لمجتمع سحابي نشط من المتعلمين والخبراء، شارك المعرفة واحصل على الدعم.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div data-aos="fade-up" data-aos-delay="200" class="glassmorphism rounded-2xl p-8">
+            <h4 class="text-3xl font-bold text-white mb-8 flex items-center">
+              <i class="fas fa-chart-bar ml-3 text-green-400"></i>
+              إحصائيات المجتمع
+            </h4>
+            <div class="space-y-8">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-yellow-500 rounded-full flex items-center justify-center ml-4">
+                    <i class="fas fa-users text-white"></i>
+                  </div>
+                  <div>
+                    <div class="text-white font-semibold">الأعضاء النشطون</div>
+                    <div class="text-gray-400 text-sm">متصلون الآن</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-3xl font-bold text-blue-400">8,247</div>
+                  <div class="text-green-400 text-sm">↑ +156 اليوم</div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center ml-4">
+                    <i class="fas fa-comments text-white"></i>
+                  </div>
+                  <div>
+                    <div class="text-white font-semibold">المناقشات النشطة</div>
+                    <div class="text-gray-400 text-sm">هذا الأسبوع</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-3xl font-bold text-green-400">2,834</div>
+                  <div class="text-green-400 text-sm">↑ +89 اليوم</div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="w-12 h-12 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center ml-4">
+                    <i class="fas fa-lightbulb text-white"></i>
+                  </div>
+                  <div>
+                    <div class="text-white font-semibold">الحلول المشتركة</div>
+                    <div class="text-gray-400 text-sm">هذا الشهر</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-3xl font-bold text-pink-400">5,692</div>
+                  <div class="text-green-400 text-sm">↑ +234 اليوم</div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center ml-4">
+                    <i class="fas fa-handshake text-white"></i>
+                  </div>
+                  <div>
+                    <div class="text-white font-semibold">المساعدات المقدمة</div>
+                    <div class="text-gray-400 text-sm">هذا الأسبوع</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-3xl font-bold text-yellow-400">1,456</div>
+                  <div class="text-green-400 text-sm">↑ +67 اليوم</div>
+                </div>
+              </div>
+            </div>
+            <button class="w-full mt-8 btn-primary rounded-xl py-4 font-semibold text-lg hover:scale-105 transition-all duration-300">
+              <i class="fas fa-users ml-2"></i>
+              انضم للمجتمع
+            </button>
+          </div>
+
+          <div data-aos="fade-up" data-aos-delay="400" class="glassmorphism rounded-2xl p-8">
+            <h4 class="text-3xl font-bold text-white mb-8 flex items-center">
+              <i class="fas fa-signal ml-3 text-red-400"></i>
+              النشاط المباشر
+            </h4>
+
+            <div class="space-y-6 mb-8">
+              <div class="border-b border-gray-600/30 pb-6">
+                <div class="flex items-start space-x-3 space-x-reverse">
+                  <img src="https://placehold.co/40x40/3B82F6/FFFFFF?text=أ" class="w-10 h-10 rounded-full" alt="">
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                      <h5 class="text-white font-semibold text-lg">أفضل ممارسات تخفيض تكلفة AWS؟</h5>
+                      <span class="text-xs text-gray-400">منذ 5 دقائق</span>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-3">هل لديكم نصائح عملية لـ S3 و EC2 و RDS لتقليل التكلفة؟</p>
+                    <div class="flex items-center space-x-4 space-x-reverse text-xs text-gray-400">
+                      <span class="flex items-center"><i class="fas fa-heart ml-1 text-red-400"></i>12</span>
+                      <span class="flex items-center"><i class="fas fa-comment ml-1 text-blue-400"></i>8</span>
+                      <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full">AWS</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="border-b border-gray-600/30 pb-6">
+                <div class="flex items-start space-x-3 space-x-reverse">
+                  <img src="https://placehold.co/40x40/EC4899/FFFFFF?text=ف" class="w-10 h-10 rounded-full" alt="">
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                      <h5 class="text-white font-semibold text-lg">مشروع Terraform VPC مكتمل!</h5>
+                      <span class="text-xs text-gray-400">منذ 15 دقيقة</span>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-3">أنشأت VPC و Subnets و IGW و Route Tables باستخدام Terraform 🎉</p>
+                    <div class="flex items-center space-x-4 space-x-reverse text-xs text-gray-400">
+                      <span class="flex items-center"><i class="fas fa-heart ml-1 text-red-400"></i>24</span>
+                      <span class="flex items-center"><i class="fas fa-comment ml-1 text-blue-400"></i>15</span>
+                      <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-full">Terraform</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-start space-x-3 space-x-reverse">
+                  <img src="https://placehold.co/40x40/10B981/FFFFFF?text=م" class="w-10 h-10 rounded-full" alt="">
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                      <h5 class="text-white font-semibold text-lg">نصائح لإدارة K8s Production</h5>
+                      <span class="text-xs text-gray-400">منذ 30 دقيقة</span>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-3">أفضل الممارسات لـ liveness/readiness و HPA و مراقبة؟</p>
+                    <div class="flex items-center space-x-4 space-x-reverse text-xs text-gray-400">
+                      <span class="flex items-center"><i class="fas fa-heart ml-1 text-red-400"></i>18</span>
+                      <span class="flex items-center"><i class="fas fa-comment ml-1 text-blue-400"></i>6</span>
+                      <span class="px-2 py-1 bg-indigo-500/20 text-indigo-400 rounded-full">Kubernetes</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="glassmorphism-light rounded-xl p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h5 class="text-white font-semibold flex items-center">
+                  <i class="fas fa-comments ml-2 text-green-400"></i>
+                  الدردشة المباشرة
+                </h5>
+                <div class="flex items-center">
+                  <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse ml-2"></div>
+                  <span class="text-green-400 text-xs">147 متصل</span>
+                </div>
+              </div>
+              <div class="space-y-3 mb-4 max-h-32 overflow-y-auto">
+                <div class="text-sm"><span class="text-blue-400 font-medium">أحمد:</span><span class="text-gray-300 mr-2">حدا ساعدني في kubectl context؟</span></div>
+                <div class="text-sm"><span class="text-green-400 font-medium">سارة:</span><span class="text-gray-300 mr-2">بدّل بـ kubectl config use-context</span></div>
+                <div class="text-sm"><span class="text-pink-400 font-medium">محمد:</span><span class="text-gray-300 mr-2">وجرب k9s كمان 👋</span></div>
+              </div>
+              <div class="flex">
+                <input type="text" placeholder="شارك في المحادثة..." class="flex-1 bg-gray-700/50 text-white px-4 py-3 rounded-r-xl text-sm border border-gray-600/50 focus:border-blue-500 focus:outline-none">
+                <button class="bg-gradient-to-r from-blue-500 to-pink-500 text-white px-6 py-3 rounded-l-xl hover:scale-105 transition-all duration-300">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-aos="fade-up" data-aos-delay="600" class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-question-circle text-white text-2xl"></i>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">اسأل واحصل على إجابة</h4>
+            <p class="text-gray-400">اطرح أسئلتك السحابية واحصل على إجابات</p>
+          </div>
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-share-alt text-white text-2xl"></i>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">شارك مشاريعك</h4>
+            <p class="text-gray-400">اعرض بنيتك ككود واحصل على تقييم وملاحظات</p>
+          </div>
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-network-wired text-white text-2xl"></i>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">بناء الشبكة المهنية</h4>
+            <p class="text-gray-400">تواصل مع محترفي السحابة وابنِ شبكتك</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-gray-900/50 relative overflow-hidden">
+      <div class="container mx-auto px-6">
+        <div data-aos="fade-up" class="glassmorphism rounded-3xl p-12 md:p-20 max-w-5xl mx-auto text-center relative overflow-hidden">
+          <div class="absolute inset-0 opacity-10">
+            <svg class="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                  <path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" stroke-width="0.5"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)" />
+            </svg>
+          </div>
+          <div class="relative z-10">
+            <h3 class="text-4xl md:text-6xl font-bold text-white mb-8 leading-tight">
+              ابدأ رحلتك نحو
+              <br>
+              <span class="bg-gradient-to-r from-blue-400 via-pink-500 to-yellow-400 bg-clip-text text-transparent">المستقبل السحابي</span>
+            </h3>
+            <p class="text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+              انضم لأكثر من 8,500 متعلم واحصل على المهارات السحابية الأكثر طلباً.
+            </p>
+
+            <div data-aos="fade-up" data-aos-delay="200" class="glassmorphism-light rounded-2xl p-8 mb-12 max-w-md mx-auto border border-yellow-500/30">
+              <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-fire text-orange-400 text-2xl ml-3 animate-pulse"></i>
+                <p class="text-yellow-400 font-bold text-xl">عرض محدود!</p>
+                <i class="fas fa-fire text-orange-400 text-2xl mr-3 animate-pulse"></i>
+              </div>
+              <p class="text-white text-lg font-semibold mb-2">وفر 60% على جميع المسارات</p>
+              <p class="text-gray-400 text-sm mb-4">+ شهر مجاني في المجتمع المتقدم</p>
+              <div class="flex justify-center space-x-4 space-x-reverse text-center">
+                <div class="bg-red-500/20 rounded-lg p-3"><div class="text-2xl font-bold text-white">05</div><div class="text-xs text-gray-400">أيام</div></div>
+                <div class="bg-red-500/20 rounded-lg p-3"><div class="text-2xl font-bold text-white">14</div><div class="text-xs text-gray-400">ساعة</div></div>
+                <div class="bg-red-500/20 rounded-lg p-3"><div class="text-2xl font-bold text-white">32</div><div class="text-xs text-gray-400">دقيقة</div></div>
+              </div>
+            </div>
+
+            <div data-aos="fade-up" data-aos-delay="400" class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-8 md:space-x-reverse mb-16">
+              <button @click="currentUser ? window.location.href='#paths' : showSignupModal = true"
+                      class="btn-gradient rounded-2xl px-16 py-6 text-xl font-bold pulse-glow group hover:scale-105 transition-all duration-300">
+                <i class="fas fa-rocket ml-3 group-hover:animate-bounce"></i>
+                <span x-text="currentUser ? 'استكشف المسارات الآن' : 'ابدأ مجاناً الآن'"></span>
+              </button>
+              <button class="btn-secondary rounded-2xl px-16 py-6 text-xl font-bold group hover:scale-105 transition-all duration-300">
+                <i class="fas fa-phone ml-3 group-hover:animate-pulse"></i>
+                تحدث مع مستشار
+              </button>
+            </div>
+
+            <div data-aos="fade-up" data-aos-delay="600" class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div class="group">
+                <div class="text-3xl font-bold text-green-400 mb-2 group-hover:scale-110 transition-transform duration-300">30 يوم</div>
+                <div class="text-sm text-gray-400">ضمان استرداد المال</div>
+                <i class="fas fa-shield-halved text-green-400 mt-2"></i>
+              </div>
+              <div class="group">
+                <div class="text-3xl font-bold text-blue-400 mb-2 group-hover:scale-110 transition-transform duration-300">24/7</div>
+                <div class="text-sm text-gray-400">دعم فني متواصل</div>
+                <i class="fas fa-headset text-blue-400 mt-2"></i>
+              </div>
+              <div class="group">
+                <div class="text-3xl font-bold text-pink-400 mb-2 group-hover:scale-110 transition-transform duration-300">مدى الحياة</div>
+                <div class="text-sm text-gray-400">وصول للمحتوى</div>
+                <i class="fas fa-infinity text-pink-400 mt-2"></i>
+              </div>
+              <div class="group">
+                <div class="text-3xl font-bold text-yellow-400 mb-2 group-hover:scale-110 transition-transform duration-300">مجاني</div>
+                <div class="text-sm text-gray-400">التحديثات والإضافات</div>
+                <i class="fas fa-sync-alt text-yellow-400 mt-2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-gray-900/90 border-top border-gray-700/50 backdrop-blur-sm">
+    <div class="container mx-auto px-6 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div>
+          <div class="flex items-center space-x-3 space-x-reverse mb-6">
+            <div class="w-14 h-14 p-1.5 flex items-center justify-center">
+              <img src='data:image/svg+xml,%3Csvg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg"%3E%3Cdefs%3E%3ClinearGradient id="logoGradient" x1="0%25" y1="0%25" x2="100%25" y2="100%25"%3E%3Cstop offset="0%25" style="stop-color:%23F4436A;" /%3E%3Cstop offset="50%25" style="stop-color:%23FFC107;" /%3E%3Cstop offset="100%25" style="stop-color:%234A88FF;" /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill="none" stroke="url(%23logoGradient)" stroke-width="25" stroke-linecap="round" stroke-linejoin="round" d="M 60 30 A 30 30 0 1 1 60 90 M 60 90 A 30 30 0 0 0 120 90 M 140 90 A 30 30 0 1 0 140 30 M 140 30 A 30 30 0 0 0 80 30"/%3E%3C/svg%3E' alt="Logo">
+            </div>
+            <div>
+              <h5 class="text-2xl font-bold bg-gradient-to-r from-pink-400 to-blue-400 bg-clip-text text-transparent">سحابة الأردن</h5>
+              <p class="text-xs text-gray-400">منصة مسارات الحوسبة السحابية</p>
+            </div>
+          </div>
+          <p class="text-gray-400 mb-6 leading-relaxed">
+            نحو مستقبل رقمي واعد في الأردن عبر تعليم سحابي عملي يواكب السوق.
+          </p>
+          <div class="flex space-x-4 space-x-reverse">
+            <a href="#" class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-500 transition-all duration-300 hover:scale-110"><i class="fab fa-facebook-f text-white"></i></a>
+            <a href="#" class="w-12 h-12 bg-blue-400 rounded-xl flex items-center justify-center hover:bg-blue-300 transition-all duration-300 hover:scale-110"><i class="fab fa-twitter text-white"></i></a>
+            <a href="#" class="w-12 h-12 bg-blue-700 rounded-xl flex items-center justify-center hover:bg-blue-600 transition-all duration-300 hover:scale-110"><i class="fab fa-linkedin-in text-white"></i></a>
+            <a href="#" class="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center hover:bg-red-500 transition-all duration-300 hover:scale-110"><i class="fab fa-youtube text-white"></i></a>
+            <a href="#" class="w-12 h-12 bg-pink-600 rounded-xl flex items-center justify-center hover:bg-pink-500 transition-all duration-300 hover:scale-110"><i class="fab fa-instagram text-white"></i></a>
+          </div>
+        </div>
+
+        <div>
+          <h5 class="text-xl font-bold text-white mb-6">روابط سريعة</h5>
+          <ul class="space-y-3">
+            <li><a href="#paths" class="text-gray-400 hover:text-white transition-all duration-300 flex items-center group"><i class="fas fa-route ml-2 group-hover:text-blue-400"></i> المسارات السحابية</a></li>
+            <li><a href="#labs" class="text-gray-400 hover:text-white transition-all duration-300 flex items-center group"><i class="fas fa-flask ml-2 group-hover:text-green-400"></i> المختبرات التفاعلية</a></li>
+            <li><a href="#achievements" class="text-gray-400 hover:text-white transition-all duration-300 flex items-center group"><i class="fas fa-trophy ml-2 group-hover:text-yellow-400"></i> الشهادات والإنجازات</a></li>
+            <li><a href="#community" class="text-gray-400 hover:text-white transition-all duration-300 flex items-center group"><i class="fas fa-users ml-2 group-hover:text-pink-400"></i> المجتمع</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all duration-300 flex items-center group"><i class="fas fa-blog ml-2 group-hover:text-cyan-400"></i> المدونة</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h5 class="text-xl font-bold text-white mb-6">الدعم والمساعدة</h5>
+          <ul class="space-y-3">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all duration-300 flex items-center group"><i class="fas fa-question-circle ml-2 group-hover:text-blue-400"></i> مركز المساعدة</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all duration-300 flex items-center group"><i class="fas fa-envelope ml-2 group-hover:text-green-400"></i> اتصل بنا</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all duration-300 flex items-center group"><i class="fas fa-comments ml-2 group-hover:text-pink-400"></i> الأسئلة الشائعة</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all duration-300 flex items-center group"><i class="fas fa-shield-alt ml-2 group-hover:text-yellow-400"></i> سياسة الخصوصية</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-all duration-300 flex items-center group"><i class="fas fa-file-contract ml-2 group-hover:text-red-400"></i> شروط الاستخدام</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h5 class="text-xl font-bold text-white mb-6">تواصل معنا</h5>
+          <div class="space-y-4 mb-6">
+            <div class="flex items-center group"><i class="fas fa-map-marker-alt text-blue-400 ml-3 group-hover:scale-110"></i><span class="text-gray-400">عمان، الأردن</span></div>
+            <div class="flex items-center group"><i class="fas fa-phone text-green-400 ml-3 group-hover:scale-110"></i><span class="text-gray-400">+962 6 123 4567</span></div>
+            <div class="flex items-center group"><i class="fas fa-envelope text-pink-400 ml-3 group-hover:scale-110"></i><span class="text-gray-400">info@sahaba-jordan.com</span></div>
+            <div class="flex items-center group"><i class="fas fa-clock text-yellow-400 ml-3 group-hover:scale-110"></i><span class="text-gray-400">24/7 دعم متواصل</span></div>
+          </div>
+
+          <div class="glassmorphism-light rounded-xl p-4">
+            <h6 class="text-white font-semibold mb-3 flex items-center">
+              <i class="fas fa-newspaper ml-2 text-blue-400"></i>
+              النشرة الإخبارية
+            </h6>
+            <p class="text-gray-400 text-sm mb-4">احصل على آخر الأخبار والعروض</p>
+            <div class="flex">
+              <input type="email" placeholder="بريدك الإلكتروني"
+                     class="flex-1 bg-gray-700/50 text-white px-4 py-3 rounded-r-xl text-sm border border-gray-600/50 focus:border-blue-500 focus:outline-none">
+              <button class="bg-gradient-to-r from-blue-500 to-pink-500 text-white px-6 py-3 rounded-l-xl hover:scale-105 transition-all duration-300">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-700/50 mt-12 pt-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="text-center md:text-right mb-4 md:mb-0">
+            <p class="text-gray-400">&copy; 2024 سحابة الأردن. جميع الحقوق محفوظة.</p>
+            <p class="text-blue-400 text-sm mt-1">صُنع بـ <i class="fas fa-heart text-red-400 animate-pulse"></i> في الأردن</p>
+          </div>
+          <div class="flex items-center space-x-6 space-x-reverse">
+            <div class="flex items-center">
+              <i class="fas fa-shield-halved text-green-400 ml-2"></i>
+              <span class="text-gray-400 text-sm">محتوى آمن ومعتمد</span>
+            </div>
+            <div class="flex items-center">
+              <i class="fas fa-certificate text-yellow-400 ml-2"></i>
+              <span class="text-gray-400 text-sm">شهادات معترف بها</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div x-show="showLoginModal"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+    <div @click.outside="showLoginModal = false" class="glassmorphism rounded-3xl p-8 w-full max-w-md border border-white/20 relative overflow-hidden">
+      <div class="relative z-10">
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-sign-in-alt text-white text-2xl"></i>
+          </div>
+          <h3 class="text-3xl font-bold text-white mb-2">مرحباً بعودتك!</h3>
+          <p class="text-gray-400">سجل دخولك لمتابعة رحلتك السحابية</p>
+        </div>
+        <form @submit.prevent="login($refs.loginEmail.value, $refs.loginPassword.value)" class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">البريد الإلكتروني</label>
+            <div class="relative">
+              <i class="fas fa-envelope absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input x-ref="loginEmail" type="email" required
+                     class="w-full pr-12 pl-4 py-4 bg-gray-700/50 border border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition-all duration-300"
+                     placeholder="your@email.com">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">كلمة المرور</label>
+            <div class="relative">
+              <i class="fas fa-lock absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input x-ref="loginPassword" type="password" required
+                     class="w-full pr-12 pl-4 py-4 bg-gray-700/50 border border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition-all duration-300"
+                     placeholder="••••••••">
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="flex items-center">
+              <input type="checkbox" class="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-0">
+              <span class="mr-2 text-sm text-gray-300">تذكرني</span>
+            </label>
+            <a href="#" class="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-300">نسيت كلمة المرور؟</a>
+          </div>
+          <button type="submit" class="w-full btn-primary rounded-xl py-4 text-lg font-semibold hover:scale-105 transition-all duration-300">
+            <i class="fas fa-sign-in-alt ml-2"></i>
+            تسجيل الدخول
+          </button>
+        </form>
+        <div class="mt-8 text-center">
+          <p class="text-gray-400">ليس لديك حساب؟
+            <button @click="showLoginModal = false; showSignupModal = true" class="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-300">
+              إنشاء حساب جديد
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div x-show="showSignupModal"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+    <div @click.outside="showSignupModal = false" class="glassmorphism rounded-3xl p-8 w-full max-w-md border border-white/20 relative overflow-hidden">
+      <div class="relative z-10">
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-user-plus text-white text-2xl"></i>
+          </div>
+          <h3 class="text-3xl font-bold text-white mb-2">انضم إلينا اليوم!</h3>
+          <p class="text-gray-400">ابدأ رحلتك السحابية مجاناً</p>
+        </div>
+        <form @submit.prevent="signup($refs.signupName.value, $refs.signupEmail.value, $refs.signupPassword.value)" class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">الاسم الكامل</label>
+            <div class="relative">
+              <i class="fas fa-user absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input x-ref="signupName" type="text" required
+                     class="w-full pr-12 pl-4 py-4 bg-gray-700/50 border border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition-all duration-300"
+                     placeholder="أدخل اسمك الكامل">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">البريد الإلكتروني</label>
+            <div class="relative">
+              <i class="fas fa-envelope absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input x-ref="signupEmail" type="email" required
+                     class="w-full pr-12 pl-4 py-4 bg-gray-700/50 border border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition-all duration-300"
+                     placeholder="your@email.com">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">كلمة المرور</label>
+            <div class="relative">
+              <i class="fas fa-lock absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input x-ref="signupPassword" type="password" required
+                     class="w-full pr-12 pl-4 py-4 bg-gray-700/50 border border-gray-600/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition-all duration-300"
+                     placeholder="••••••••">
+            </div>
+            <div class="mt-2 text-xs text-gray-400">يجب أن تحتوي على 8 أحرف على الأقل</div>
+          </div>
+          <div>
+            <label class="flex items-start">
+              <input type="checkbox" required class="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 mt-1">
+              <span class="mr-3 text-sm text-gray-300 leading-relaxed">
+                أوافق على
+                <a href="#" class="text-blue-400 hover:text-blue-300">الشروط والأحكام</a>
+                و
+                <a href="#" class="text-blue-400 hover:text-blue-300">سياسة الخصوصية</a>
+              </span>
+            </label>
+          </div>
+          <button type="submit" class="w-full btn-primary rounded-xl py-4 text-lg font-semibold hover:scale-105 transition-all duration-300">
+            <i class="fas fa-user-plus ml-2"></i>
+            إنشاء الحساب مجاناً
+          </button>
+        </form>
+        <div class="mt-8 text-center">
+          <p class="text-gray-400">لديك حساب بالفعل؟
+            <button @click="showSignupModal = false; showLoginModal = true" class="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-300">
+              تسجيل الدخول
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div x-show="showPathModal"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+    <div @click.outside="showPathModal = false" class="glassmorphism rounded-3xl p-0 w-full max-w-6xl max-h-screen overflow-y-auto border border-white/20">
+      <template x-if="currentPath">
+        <div>
+          <div class="relative h-80 overflow-hidden rounded-t-3xl">
+            <img :src="currentPath.image" :alt="currentPath.title" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <button @click="showPathModal = false" class="absolute top-6 left-6 w-12 h-12 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-all duration-300">
+              <i class="fas fa-times text-xl"></i>
+            </button>
+            <div class="absolute bottom-0 left-0 right-0 p-8">
+              <div class="flex items-end justify-between">
+                <div>
+                  <h3 class="text-4xl font-bold text-white mb-2" x-text="currentPath.title"></h3>
+                  <p class="text-xl text-gray-300" x-text="currentPath.description"></p>
+                </div>
+                <div class="text-right">
+                  <div class="text-4xl font-bold text-white" x-text="currentPath.price + ' د.أ'"></div>
+                  <div class="text-xl text-gray-400 line-through" x-text="currentPath.originalPrice + ' د.أ'"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+              <div class="lg:col-span-2">
+                <div class="mb-12">
+                  <h4 class="text-2xl font-bold text-white mb-6">نظرة عامة على المسار</h4>
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                    <div class="text-center glassmorphism-light rounded-xl p-4">
+                      <i class="fas fa-clock text-blue-400 text-2xl mb-2"></i>
+                      <div class="text-white font-semibold" x-text="currentPath.duration"></div>
+                      <div class="text-gray-400 text-sm">المدة الإجمالية</div>
+                    </div>
+                    <div class="text-center glassmorphism-light rounded-xl p-4">
+                      <i class="fas fa-book text-green-400 text-2xl mb-2"></i>
+                      <div class="text-white font-semibold" x-text="currentPath.courses + ' دورة'"></div>
+                      <div class="text-gray-400 text-sm">عدد الدورات</div>
+                    </div>
+                    <div class="text-center glassmorphism-light rounded-xl p-4">
+                      <i class="fas fa-project-diagram text-pink-400 text-2xl mb-2"></i>
+                      <div class="text-white font-semibold" x-text="currentPath.projects + ' مشروع'"></div>
+                      <div class="text-gray-400 text-sm">المشاريع العملية</div>
+                    </div>
+                    <div class="text-center glassmorphism-light rounded-xl p-4">
+                      <i class="fas fa-certificate text-yellow-400 text-2xl mb-2"></i>
+                      <div class="text-white font-semibold">شهادة</div>
+                      <div class="text-gray-400 text-sm">معتمدة</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-12">
+                  <h4 class="text-2xl font-bold text-white mb-6">ما ستتعلمه في هذا المسار</h4>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <template x-for="outcome in currentPath.outcomes" :key="outcome">
+                      <div class="flex items-center p-4 glassmorphism-light rounded-xl">
+                        <i class="fas fa-check-circle text-green-400 text-xl ml-4"></i>
+                        <span class="text-white" x-text="outcome"></span>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+
+                <div class="mb-12">
+                  <h4 class="text-2xl font-bold text-white mb-6">منهج المسار التفصيلي</h4>
+                  <div class="space-y-4">
+                    <template x-for="(module, index) in currentPath.syllabus" :key="index">
+                      <div class="glassmorphism-light rounded-xl p-6 border border-gray-600/30">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center ml-4"
+                                 :class="module.completed ? 'bg-green-500' : 'bg-gray-600'">
+                              <i class="fas text-white" :class="module.completed ? 'fa-check' : 'fa-play'"></i>
+                            </div>
+                            <div>
+                              <h5 class="text-white font-semibold text-lg" x-text="module.title"></h5>
+                              <p class="text-gray-400 text-sm" x-text="module.duration"></p>
+                            </div>
+                          </div>
+                          <div class="text-left">
+                            <span class="text-sm text-gray-400" x-text="'الوحدة ' + (index + 1)"></span>
+                            <div x-show="module.completed" class="text-green-400 text-xs mt-1">مكتمل</div>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+
+                <div class="mb-12">
+                  <h4 class="text-2xl font-bold text-white mb-6">المتطلبات المسبقة</h4>
+                  <div class="glassmorphism-light rounded-xl p-6">
+                    <template x-if="currentPath.prerequisites.length > 0">
+                      <ul class="space-y-3">
+                        <template x-for="prerequisite in currentPath.prerequisites" :key="prerequisite">
+                          <li class="flex items-center">
+                            <i class="fas fa-arrow-left text-blue-400 ml-3"></i>
+                            <span class="text-white" x-text="prerequisite"></span>
+                          </li>
+                        </template>
+                      </ul>
+                    </template>
+                    <template x-if="currentPath.prerequisites.length === 0">
+                      <p class="text-green-400">لا توجد متطلبات مسبقة - مناسب للمبتدئين</p>
+                    </template>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lg:col-span-1">
+                <div class="glassmorphism-light rounded-2xl p-6 mb-8">
+                  <h4 class="text-xl font-bold text-white mb-6">المدرب</h4>
+                  <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span class="text-white text-2xl font-bold" x-text="currentPath.instructor.charAt(0)"></span>
+                    </div>
+                    <h5 class="text-white font-semibold text-lg mb-2" x-text="currentPath.instructor"></h5>
+                    <p class="text-gray-400 text-sm mb-4">خبير متخصص في المجال</p>
+                    <div class="flex justify-center space-x-4 space-x-reverse">
+                      <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-400">50+</div>
+                        <div class="text-xs text-gray-400">دورة</div>
+                      </div>
+                      <div class="text-center">
+                        <div class="text-2xl font-bold text-green-400">15K+</div>
+                        <div class="text-xs text-gray-400">طالب</div>
+                      </div>
+                      <div class="text-center">
+                        <div class="text-2xl font-bold text-yellow-400">4.9</div>
+                        <div class="text-xs text-gray-400">تقييم</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="glassmorphism-light rounded-2xl p-6 mb-8">
+                  <h4 class="text-xl font-bold text-white mb-6">المهارات المكتسبة</h4>
+                  <div class="flex flex-wrap gap-3">
+                    <template x-for="skill in currentPath.skills" :key="skill">
+                      <span class="px-4 py-2 bg-gradient-to-r from-blue-500/20 to-pink-500/20 text-blue-400 rounded-full text-sm font-medium border border-blue-500/30" x-text="skill"></span>
+                    </template>
+                  </div>
+                </div>
+
+                <div class="glassmorphism-light rounded-2xl p-6 mb-8">
+                  <h4 class="text-xl font-bold text-white mb-6">إحصائيات المسار</h4>
+                  <div class="space-y-4">
+                    <div class="flex justify-between items-center"><span class="text-gray-400">الطلاب المسجلين</span><span class="text-white font-semibold" x-text="currentPath.students.toLocaleString()"></span></div>
+                    <div class="flex justify-between items-center"><span class="text-gray-400">التقييم</span><div class="flex items-center"><i class="fas fa-star text-yellow-400 ml-1"></i><span class="text-white font-semibold" x-text="currentPath.rating"></span></div></div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-gray-400">مستوى الصعوبة</span>
+                      <div class="skill-level">
+                        <template x-for="(star, i) in getDifficultyStars(currentPath.difficulty)" :key="i"><div class="skill-dot" :class="{ 'active': star }"></div></template>
+                      </div>
+                    </div>
+                    <div class="flex justify-between items-center"><span class="text-gray-400">اللغة</span><span class="text-white font-semibold">العربية</span></div>
+                  </div>
+                </div>
+
+                <div class="space-y-4">
+                  <button @click="currentUser ? enrollPath(currentPath.id) : (showPathModal = false, showSignupModal = true)"
+                          class="w-full btn-primary rounded-xl py-4 text-lg font-semibold hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-plus ml-2"></i>
+                    <span x-text="currentUser ? 'الانضمام للمسار' : 'سجل للانضمام'"></span>
+                  </button>
+                  <button class="w-full btn-secondary rounded-xl py-4 text-lg font-semibold hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-heart ml-2"></i>
+                    إضافة للمفضلة
+                  </button>
+                  <button class="w-full btn-secondary rounded-xl py-4 text-lg font-semibold hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-share ml-2"></i>
+                    مشاركة المسار
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <div x-show="showLabModal"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+    <div @click.outside="showLabModal = false" class="glassmorphism rounded-3xl p-8 w-full max-w-7xl max-h-screen overflow-y-auto border border-white/20">
+      <template x-if="currentLab">
+        <div>
+          <div class="flex justify-between items-start mb-8">
+            <div>
+              <h3 class="text-4xl font-bold text-white mb-2" x-text="currentLab.title"></h3>
+              <p class="text-xl text-gray-400" x-text="currentLab.description"></p>
+            </div>
+            <button @click="showLabModal = false" class="w-12 h-12 bg-gray-700/50 rounded-full flex items-center justify-center text-white hover:bg-gray-700 transition-all duration-300">
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div>
+              <h4 class="text-2xl font-bold text-white mb-6 flex items-center">
+                <i class="fas fa-list-ol ml-3 text-blue-400"></i>
+                خطوات المختبر
+              </h4>
+              <div class="space-y-4 mb-8">
+                <template x-for="(step, index) in currentLab.steps" :key="index">
+                  <div class="flex items-start p-6 glassmorphism-light rounded-xl hover:bg-gray-700/30 transition-all duration-300">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm ml-4 flex-shrink-0" x-text="index + 1"></div>
+                    <div>
+                      <h5 class="text-white font-semibold text-lg mb-2" x-text="step"></h5>
+                      <p class="text-gray-400 text-sm">اتبع التعليمات المفصلة في البيئة التفاعلية</p>
+                    </div>
+                  </div>
+                </template>
+              </div>
+
+              <div class="mb-8">
+                <h5 class="text-xl font-bold text-white mb-4 flex items-center">
+                  <i class="fas fa-tools ml-3 text-green-400"></i>
+                  التقنيات المستخدمة
+                </h5>
+                <div class="flex flex-wrap gap-3">
+                  <template x-for="tech in currentLab.technologies" :key="tech">
+                    <span class="px-4 py-2 bg-gradient-to-r from-green-500/20 to-teal-500/20 text-green-400 rounded-full text-sm font-medium border border-green-500/30" x-text="tech"></span>
+                  </template>
+                </div>
+              </div>
+
+              <div class="flex space-x-4 space-x-reverse">
+                <button @click="completeLab(currentLab.id)" class="flex-1 btn-primary rounded-xl py-4 text-lg font-semibold hover:scale-105 transition-all duration-300">
+                  <i class="fas fa-check ml-2"></i>
+                  إكمال المختبر
+                </button>
+                <button class="px-6 py-4 btn-secondary rounded-xl font-semibold hover:scale-105 transition-all duration-300">
+                  <i class="fas fa-question-circle"></i>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-2xl font-bold text-white mb-6 flex items-center">
+                <i class="fas fa-desktop ml-3 text-pink-400"></i>
+                البيئة التفاعلية
+              </h4>
+
+              <div class="flex space-x-2 space-x-reverse mb-6" x-data="{ activeTab: 'editor' }">
+                <button @click="activeTab = 'editor'" class="px-6 py-3 rounded-xl font-medium transition-all duration-300" :class="activeTab === 'editor' ? 'bg-blue-500 text-white' : 'bg-gray-700/50 text-gray-400 hover:bg-gray-700'">
+                  <i class="fas fa-code ml-2"></i>محرر الكود
+                </button>
+                <button @click="activeTab = 'terminal'" class="px-6 py-3 rounded-xl font-medium transition-all duration-300" :class="activeTab === 'terminal' ? 'bg-green-500 text-white' : 'bg-gray-700/50 text-gray-400 hover:bg-gray-700'">
+                  <i class="fas fa-terminal ml-2"></i>الطرفية
+                </button>
+                <button @click="activeTab = 'preview'" class="px-6 py-3 rounded-xl font-medium transition-all duration-300" :class="activeTab === 'preview' ? 'bg-pink-500 text-white' : 'bg-gray-700/50 text-gray-400 hover:bg-gray-700'">
+                  <i class="fas fa-eye ml-2"></i>المعاينة
+                </button>
+              </div>
+
+              <div x-show="activeTab === 'editor'">
+                <div class="code-editor relative">
+                  <div class="code-content">
+                    <div class="flex items-center justify-between mb-4 mt-8">
+                      <span class="text-gray-400 text-sm">main.tf</span>
+                      <button class="text-gray-400 hover:text-white text-sm transition-colors duration-300">
+                        <i class="fas fa-copy ml-1"></i>نسخ
+                      </button>
+                    </div>
+<pre class="text-sm text-green-400"><code># Terraform example: AWS VPC + EC2
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+provider "aws" {
+  region = "eu-central-1"
+}
+
+resource "aws_vpc" "main" {
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+  tags = { Name = "lab-vpc" }
+}
+
+resource "aws_subnet" "public_a" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.1.0/24"
+  map_public_ip_on_launch = true
+  tags = { Name = "public-a" }
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-0c02fb55956c7d316"
+  instance_type = "t3.micro"
+  subnet_id     = aws_subnet.public_a.id
+  tags = { Name = "lab-web" }
+}
+</code></pre>
+                  </div>
+                </div>
+              </div>
+
+              <div x-show="activeTab === 'terminal'">
+                <div class="terminal">
+                  <div class="mt-8">
+                    <div class="text-green-400">$ terraform init</div>
+                    <div class="text-gray-400 mt-2">Initializing the backend...</div>
+                    <div class="text-gray-400">Initializing provider plugins...</div>
+                    <div class="text-green-400 mt-4">$ terraform apply</div>
+                    <div class="text-gray-400 mt-2">Plan: 3 to add, 0 to change, 0 to destroy.</div>
+                    <div class="text-white mt-2">Apply complete! Resources: 3 added.</div>
+                    <div class="mt-6 flex items-center">
+                      <span class="text-green-400">$ </span>
+                      <span class="animate-pulse bg-green-400 w-2 h-4 mr-1"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div x-show="activeTab === 'preview'">
+                <div class="glassmorphism-light rounded-xl p-8 h-96 flex items-center justify-center">
+                  <div class="text-center">
+                    <i class="fas fa-play-circle text-6xl text-blue-400 mb-4"></i>
+                    <h5 class="text-xl font-bold text-white mb-2">معاينة النتيجة</h5>
+                    <p class="text-gray-400">شغّل Terraform لمشاهدة الموارد المنشأة</p>
+                    <button class="mt-4 btn-primary rounded-lg px-6 py-3 font-semibold">
+                      <i class="fas fa-play ml-2"></i>تشغيل
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <script src="mind.js"></script>
+</body>
+</html>
