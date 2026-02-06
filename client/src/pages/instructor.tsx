@@ -239,6 +239,8 @@ interface LabFormData {
   description: string;
   about: string;
   environment: string;
+  icon: string;
+  image: string;
   level: string;
   duration: number;
   xpReward: number;
@@ -251,6 +253,8 @@ const initialLabForm: LabFormData = {
   description: "",
   about: "",
   environment: "",
+  icon: "cloud",
+  image: "",
   level: "مبتدئ",
   duration: 30,
   xpReward: 100,
@@ -428,6 +432,8 @@ export default function InstructorDashboard() {
       description: lab.description,
       about: lab.about || "",
       environment: lab.environment || "",
+      icon: lab.icon || "cloud",
+      image: lab.image || "",
       level: lab.level,
       duration: lab.duration,
       xpReward: lab.xpReward,
@@ -454,6 +460,8 @@ export default function InstructorDashboard() {
       description: labForm.description,
       about: labForm.about,
       environment: labForm.environment,
+      icon: labForm.icon || "cloud",
+      image: labForm.image || null,
       level: labForm.level,
       duration: labForm.duration,
       xpReward: labForm.xpReward,
