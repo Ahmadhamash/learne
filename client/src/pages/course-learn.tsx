@@ -311,6 +311,7 @@ export default function CourseLearn() {
   }
 
   const videoInfo = currentLesson?.videoUrl ? extractVideoId(currentLesson.videoUrl) : null;
+  const isUploadedVideo = currentLesson?.videoUrl?.startsWith("/api/videos/stream/");
 
   return (
     <div className="min-h-screen pt-16">
@@ -319,7 +320,34 @@ export default function CourseLearn() {
         <div className="flex-1 flex flex-col">
           {/* Video Player */}
           <div className="bg-black aspect-video w-full">
-            {currentLesson?.videoUrl && videoInfo?.id ? (
+            {currentLesson?.videoUrl && isUploadedVideo ? (
+              <div
+                className="relative w-full h-full select-none"
+                onContextMenu={(e) => e.preventDefault()}
+                style={{ WebkitUserSelect: "none", userSelect: "none" }}
+              >
+                <video
+                  className="w-full h-full"
+                  controls
+                  controlsList="nodownload noplaybackrate"
+                  disablePictureInPicture
+                  onContextMenu={(e) => e.preventDefault()}
+                  data-testid="video-player"
+                  playsInline
+                  key={currentLesson.videoUrl}
+                >
+                  <source src={currentLesson.videoUrl} type="video/mp4" />
+                  المتصفح لا يدعم تشغيل الفيديو
+                </video>
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: "transparent",
+                    zIndex: 1,
+                  }}
+                />
+              </div>
+            ) : currentLesson?.videoUrl && videoInfo?.id ? (
               videoInfo.type === "youtube" ? (
                 <iframe
                   className="w-full h-full"

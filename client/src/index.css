@@ -260,6 +260,16 @@
   animation: float 3s ease-in-out infinite;
 }
 
+@keyframes scroll-rtl {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll-rtl {
+  animation: scroll-rtl 25s linear infinite;
+  width: max-content;
+}
+
 /* Pulse glow effect */
 @keyframes pulse-glow {
   0%, 100% {

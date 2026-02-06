@@ -17,7 +17,8 @@ import {
   X,
   FileText,
   Settings,
-  FlaskConical
+  FlaskConical,
+  Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -330,6 +331,20 @@ export default function InstructorDashboard() {
     }
   });
 
+  const createLabMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest("POST", "/api/instructor/labs", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/instructor/labs"] });
+      toast({ title: "تم إنشاء المختبر بنجاح" });
+      handleCloseLabModal();
+    },
+    onError: (error: any) => {
+      toast({ title: "خطأ", description: error.message || "فشل إنشاء المختبر", variant: "destructive" });
+    }
+  });
+
   const updateLabMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
       return apiRequest("PATCH", `/api/instructor/labs/${id}`, data);
@@ -345,6 +360,19 @@ export default function InstructorDashboard() {
         description: error.message || "فشل تحديث المختبر", 
         variant: "destructive" 
       });
+    }
+  });
+
+  const deleteLabMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("DELETE", `/api/instructor/labs/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/instructor/labs"] });
+      toast({ title: "تم حذف المختبر بنجاح" });
+    },
+    onError: (error: any) => {
+      toast({ title: "خطأ", description: error.message || "فشل حذف المختبر", variant: "destructive" });
     }
   });
 
@@ -410,29 +438,40 @@ export default function InstructorDashboard() {
   };
 
   const handleSubmitLab = () => {
+    const technologiesArray = labForm.technologies
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+
+    const labData = {
+      title: labForm.title,
+      description: labForm.description,
+      level: labForm.level,
+      duration: labForm.duration,
+      xpReward: labForm.xpReward,
+      color: labForm.color,
+      technologies: technologiesArray,
+    };
+
     if (editingLab) {
-      const technologiesArray = labForm.technologies
-        .split(",")
-        .map((t) => t.trim())
-        .filter((t) => t.length > 0);
-      
-      updateLabMutation.mutate({
-        id: editingLab.id,
-        data: {
-          title: labForm.title,
-          description: labForm.description,
-          level: labForm.level,
-          duration: labForm.duration,
-          xpReward: labForm.xpReward,
-          color: labForm.color,
-          technologies: technologiesArray,
-        },
-      });
+      updateLabMutation.mutate({ id: editingLab.id, data: labData });
+    } else {
+      createLabMutation.mutate(labData);
     }
   };
 
+  const handleOpenCreateLabModal = () => {
+    setEditingLab(null);
+    setLabForm(initialLabForm);
+    setLabModalOpen(true);
+  };
+
+  const handleManageLabContent = (labId: string) => {
+    setLocation(`/admin/labs/${labId}/content`);
+  };
+
   const isSubmitting = createCourseMutation.isPending || updateCourseMutation.isPending;
-  const isLabSubmitting = updateLabMutation.isPending;
+  const isLabSubmitting = updateLabMutation.isPending || createLabMutation.isPending;
 
   return (
     <div className="min-h-screen pt-20 pb-10">
@@ -979,6 +1018,10 @@ export default function InstructorDashboard() {
                 <h2 className="text-2xl font-bold">المختبرات التعليمية</h2>
                 <p className="text-muted-foreground">إدارة المختبرات العملية الخاصة بك</p>
               </div>
+              <Button className="bg-gradient-primary gap-2" onClick={handleOpenCreateLabModal}>
+                <Plus className="h-4 w-4" />
+                إنشاء مختبر جديد
+              </Button>
             </div>
             
             {labsLoading ? (
@@ -1048,15 +1091,39 @@ export default function InstructorDashboard() {
                         </div>
                       )}
                       
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full gap-1"
-                        onClick={() => handleOpenEditLabModal(lab)}
-                      >
-                        <Edit className="h-3 w-3" />
-                        تعديل
-                      </Button>
+                      <div className="flex flex-col gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full gap-1"
+                          onClick={() => handleOpenEditLabModal(lab)}
+                        >
+                          <Edit className="h-3 w-3" />
+                          تعديل
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full gap-1"
+                          onClick={() => handleManageLabContent(lab.id)}
+                        >
+                          <Settings className="h-3 w-3" />
+                          إدارة المحتوى
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          size="sm" 
+                          className="w-full gap-1"
+                          onClick={() => {
+                            if (window.confirm("هل أنت متأكد من حذف هذا المختبر؟")) {
+                              deleteLabMutation.mutate(lab.id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                          حذف
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -1239,9 +1306,9 @@ export default function InstructorDashboard() {
         <Dialog open={labModalOpen} onOpenChange={setLabModalOpen}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>تعديل المختبر</DialogTitle>
+              <DialogTitle>{editingLab ? "تعديل المختبر" : "إنشاء مختبر جديد"}</DialogTitle>
               <DialogDescription>
-                قم بتعديل بيانات المختبر التعليمي
+                {editingLab ? "قم بتعديل بيانات المختبر التعليمي" : "أدخل بيانات المختبر التعليمي الجديد"}
               </DialogDescription>
             </DialogHeader>
 
@@ -1343,7 +1410,7 @@ export default function InstructorDashboard() {
                 disabled={isLabSubmitting || !labForm.title || !labForm.description}
                 className="bg-gradient-primary"
               >
-                {isLabSubmitting ? "جاري الحفظ..." : "تحديث المختبر"}
+                {isLabSubmitting ? "جاري الحفظ..." : editingLab ? "تحديث المختبر" : "إنشاء المختبر"}
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -40,6 +40,18 @@ script/          - Build scripts
 - `DATABASE_URL` - PostgreSQL connection string (auto-provisioned)
 - `PORT` - Server port (defaults to 5000)
 
+## Recent Changes
+- **Video Upload/Streaming**: Protected video upload (500MB, MP4/WebM/OGG) with multer, streaming with Range requests, download prevention
+- **Instructor Lab Management**: Full CRUD for labs (create, edit, delete) + lab content (sections) management via instructor dashboard
+- **Lab Content Page**: Supports both admin and instructor roles with dynamic API routing
+- **Homepage Cloud Logos**: Animated scrolling logos for AWS, Azure, Google Cloud, Kubernetes, GitHub, Terraform
+
+## Key Features
+- **Video Protection**: HTML5 controls disable download, context menu, PiP; CSS overlay prevents screen recording
+- **Role-based Access**: Admin, Instructor, Student with separate API routes and UI
+- **Instructor Dashboard**: Manage courses (CRUD + content), labs (CRUD + sections), view submissions
+- **Uploads**: Stored in `/uploads/videos/` with UUID filenames
+
 ## Deployment
 - Build: `npm run build`
 - Run: `npm run start`

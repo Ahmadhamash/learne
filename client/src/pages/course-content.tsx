@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, useLocation, Link } from "wouter";
 import { 
@@ -15,7 +15,9 @@ import {
   X,
   PlayCircle,
   HelpCircle,
-  CheckCircle2
+  CheckCircle2,
+  Upload,
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -93,6 +95,11 @@ export default function CourseContentPage() {
     isPublished: false,
     sectionId: null as string | null
   });
+
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoUploading, setVideoUploading] = useState(false);
+  const [videoUploadProgress, setVideoUploadProgress] = useState("");
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   // Quiz management state
   const [quizModalOpen, setQuizModalOpen] = useState(false);
@@ -466,11 +473,45 @@ export default function CourseContentPage() {
     }
   };
 
-  const handleLessonSubmit = () => {
-    if (editingLesson) {
-      updateLessonMutation.mutate({ id: editingLesson.id, data: lessonForm });
-    } else {
-      createLessonMutation.mutate(lessonForm);
+  const uploadVideoFile = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("video", file);
+    const userId = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")!).id : null;
+    const res = await fetch("/api/videos/upload", {
+      method: "POST",
+      headers: userId ? { "X-User-Id": userId } : {},
+      body: formData,
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "فشل رفع الفيديو");
+    }
+    const data = await res.json();
+    return data.videoPath;
+  };
+
+  const handleLessonSubmit = async () => {
+    try {
+      let formData = { ...lessonForm };
+      if (videoFile) {
+        setVideoUploading(true);
+        setVideoUploadProgress("جاري رفع الفيديو...");
+        const videoPath = await uploadVideoFile(videoFile);
+        formData.videoUrl = videoPath;
+        setVideoUploadProgress("تم رفع الفيديو بنجاح!");
+      }
+      if (editingLesson) {
+        updateLessonMutation.mutate({ id: editingLesson.id, data: formData });
+      } else {
+        createLessonMutation.mutate(formData);
+      }
+      setVideoFile(null);
+      setVideoUploading(false);
+      setVideoUploadProgress("");
+    } catch (error: any) {
+      setVideoUploading(false);
+      setVideoUploadProgress("");
+      toast({ title: "خطأ في رفع الفيديو", description: error.message, variant: "destructive" });
     }
   };
 
@@ -766,14 +807,79 @@ export default function CourseContentPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>رابط الفيديو</Label>
-              <Input
-                value={lessonForm.videoUrl}
-                onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
-                placeholder="https://youtube.com/watch?v=..."
-                dir="ltr"
-                data-testid="input-lesson-video"
-              />
+              <Label>الفيديو</Label>
+              <div className="space-y-3">
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center">
+                  <input
+                    ref={videoInputRef}
+                    type="file"
+                    accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setVideoFile(file);
+                        setLessonForm({ ...lessonForm, videoUrl: "" });
+                      }
+                    }}
+                  />
+                  {videoFile ? (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Video className="h-4 w-4 text-primary" />
+                        <span className="truncate max-w-[200px]">{videoFile.name}</span>
+                        <span className="text-muted-foreground">({(videoFile.size / (1024 * 1024)).toFixed(1)} MB)</span>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setVideoFile(null);
+                          if (videoInputRef.current) videoInputRef.current.value = "";
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => videoInputRef.current?.click()}
+                      className="gap-2"
+                    >
+                      <Upload className="h-4 w-4" />
+                      رفع فيديو من الجهاز
+                    </Button>
+                  )}
+                  {videoUploading && (
+                    <div className="flex items-center gap-2 mt-2 text-sm text-primary">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {videoUploadProgress}
+                    </div>
+                  )}
+                </div>
+                {!videoFile && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">أو أدخل رابط فيديو (YouTube / Vimeo)</Label>
+                    <Input
+                      value={lessonForm.videoUrl}
+                      onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
+                      placeholder="https://youtube.com/watch?v=..."
+                      dir="ltr"
+                      data-testid="input-lesson-video"
+                      className="mt-1"
+                    />
+                  </div>
+                )}
+                {lessonForm.videoUrl && lessonForm.videoUrl.startsWith("/api/videos/stream/") && !videoFile && (
+                  <div className="flex items-center gap-2 text-sm text-green-600">
+                    <CheckCircle2 className="h-4 w-4" />
+                    فيديو مرفوع مسبقاً
+                  </div>
+                )}
+              </div>
             </div>
             <div className="space-y-2">
               <Label>المحتوى النصي</Label>
@@ -866,7 +972,7 @@ export default function CourseContentPage() {
             <Button variant="outline" onClick={() => setLessonModalOpen(false)}>إلغاء</Button>
             <Button 
               onClick={handleLessonSubmit}
-              disabled={!lessonForm.title || createLessonMutation.isPending || updateLessonMutation.isPending}
+              disabled={!lessonForm.title || createLessonMutation.isPending || updateLessonMutation.isPending || videoUploading}
               data-testid="button-save-lesson"
             >
               <Save className="h-4 w-4 ml-2" />

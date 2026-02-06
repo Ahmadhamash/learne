@@ -61,22 +61,23 @@ export default function LabContentPage() {
     isPublished: true
   });
 
-  // Redirect if not admin
   useEffect(() => {
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role !== "admin" && user.role !== "instructor")) {
       setLocation("/");
     }
   }, [user, setLocation]);
 
-  // Return early if not admin (after useEffect check)
-  if (!user || user.role !== "admin") {
+  if (!user || (user.role !== "admin" && user.role !== "instructor")) {
     return null;
   }
 
+  const apiBase = user.role === "admin" ? "/api/admin" : "/api/instructor";
+  const dashboardPath = user.role === "admin" ? "/admin" : "/instructor";
+
   const { data: labContent, isLoading } = useQuery<LabWithSections>({
-    queryKey: ["/api/admin/labs", labId, "content"],
+    queryKey: [apiBase, "labs", labId, "content"],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/labs/${labId}/content`, {
+      const res = await fetch(`${apiBase}/labs/${labId}/content`, {
         headers: { "X-User-Id": user.id }
       });
       if (!res.ok) throw new Error("Failed to fetch lab content");
@@ -85,13 +86,12 @@ export default function LabContentPage() {
     enabled: !!labId && !!user
   });
 
-  // Section mutations
   const createSectionMutation = useMutation({
     mutationFn: async (data: typeof sectionForm) => {
-      return apiRequest("POST", `/api/admin/labs/${labId}/sections`, data);
+      return apiRequest("POST", `${apiBase}/labs/${labId}/sections`, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/labs", labId, "content"] });
+      queryClient.invalidateQueries({ queryKey: [apiBase, "labs", labId, "content"] });
       setSectionModalOpen(false);
       resetSectionForm();
       toast({ title: "تم إنشاء القسم بنجاح" });
@@ -103,10 +103,10 @@ export default function LabContentPage() {
 
   const updateSectionMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<typeof sectionForm> }) => {
-      return apiRequest("PATCH", `/api/admin/lab-sections/${id}`, data);
+      return apiRequest("PATCH", `${apiBase}/lab-sections/${id}`, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/labs", labId, "content"] });
+      queryClient.invalidateQueries({ queryKey: [apiBase, "labs", labId, "content"] });
       setSectionModalOpen(false);
       setEditingSection(null);
       resetSectionForm();
@@ -119,10 +119,10 @@ export default function LabContentPage() {
 
   const deleteSectionMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest("DELETE", `/api/admin/lab-sections/${id}`, {});
+      return apiRequest("DELETE", `${apiBase}/lab-sections/${id}`, {});
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/labs", labId, "content"] });
+      queryClient.invalidateQueries({ queryKey: [apiBase, "labs", labId, "content"] });
       setDeleteTarget(null);
       toast({ title: "تم حذف القسم بنجاح" });
     },
@@ -180,7 +180,7 @@ export default function LabContentPage() {
     return (
       <div className="p-6 text-center">
         <p className="text-muted-foreground">المختبر غير موجود</p>
-        <Link href="/admin">
+        <Link href={dashboardPath}>
           <Button className="mt-4">العودة للوحة التحكم</Button>
         </Link>
       </div>
@@ -192,7 +192,7 @@ export default function LabContentPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/admin">
+          <Link href={dashboardPath}>
             <Button variant="ghost" size="icon" data-testid="button-back">
               <ArrowRight className="h-5 w-5" />
             </Button>

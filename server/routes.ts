@@ -3,6 +3,36 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserSchema, insertCourseSchema, insertLessonSchema, insertReviewSchema, insertLabSchema, insertNotificationSchema, insertLessonReviewSchema } from "@shared/schema";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import crypto from "crypto";
+
+const uploadsDir = path.resolve(process.cwd(), "uploads", "videos");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const videoStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadsDir),
+  filename: (_req, file, cb) => {
+    const uniqueName = crypto.randomUUID() + path.extname(file.originalname);
+    cb(null, uniqueName);
+  },
+});
+
+const videoUpload = multer({
+  storage: videoStorage,
+  limits: { fileSize: 500 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowedTypes = ["video/mp4", "video/webm", "video/ogg", "video/quicktime", "video/x-msvideo"];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("نوع الملف غير مدعوم. يرجى رفع فيديو بصيغة MP4 أو WebM أو OGG"));
+    }
+  },
+});
 
 const loginSchema = z.object({
   username: z.string().min(3),
@@ -830,6 +860,109 @@ export async function registerRoutes(
         return res.status(404).json({ error: "المختبر غير موجود" });
       }
       res.json(lab);
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
+  // Instructor can create labs
+  app.post("/api/instructor/labs", requireInstructor, async (req, res) => {
+    try {
+      const result = insertLabSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ error: "بيانات المختبر غير صحيحة", details: result.error.flatten() });
+      }
+      const lab = await storage.createLab(result.data);
+      res.status(201).json(lab);
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
+  // Instructor can delete labs they own
+  app.delete("/api/instructor/labs/:id", requireInstructor, async (req, res) => {
+    try {
+      const instructorUser = (req as any).instructorUser;
+      const labId = req.params.id;
+      if (instructorUser.role !== 'admin') {
+        const instructorCourses = await storage.getCoursesByInstructor(instructorUser.id);
+        const courseIds = instructorCourses.map(c => c.id);
+        let hasAccess = false;
+        for (const courseId of courseIds) {
+          const lessons = await storage.getLessonsByCourse(courseId);
+          if (lessons.some(l => l.labId === labId)) {
+            hasAccess = true;
+            break;
+          }
+        }
+        if (!hasAccess) {
+          return res.status(403).json({ error: "غير مصرح بحذف هذا المختبر" });
+        }
+      }
+      const success = await storage.deleteLab(labId);
+      if (!success) {
+        return res.status(404).json({ error: "المختبر غير موجود" });
+      }
+      res.json({ message: "تم حذف المختبر بنجاح" });
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
+  // Instructor lab content with sections (for lab-content page)
+  app.get("/api/instructor/labs/:labId/content", requireInstructor, async (req, res) => {
+    try {
+      const lab = await storage.getLabWithSections(req.params.labId);
+      if (!lab) {
+        return res.status(404).json({ error: "المختبر غير موجود" });
+      }
+      res.json(lab);
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
+  // Instructor lab sections management
+  app.get("/api/instructor/labs/:labId/sections", requireInstructor, async (req, res) => {
+    try {
+      const sections = await storage.getLabSections(req.params.labId);
+      res.json(sections);
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
+  app.post("/api/instructor/labs/:labId/sections", requireInstructor, async (req, res) => {
+    try {
+      const section = await storage.createLabSection({
+        ...req.body,
+        labId: req.params.labId
+      });
+      res.status(201).json(section);
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
+  app.patch("/api/instructor/lab-sections/:sectionId", requireInstructor, async (req, res) => {
+    try {
+      const section = await storage.updateLabSection(req.params.sectionId, req.body);
+      if (!section) {
+        return res.status(404).json({ error: "القسم غير موجود" });
+      }
+      res.json(section);
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
+  app.delete("/api/instructor/lab-sections/:sectionId", requireInstructor, async (req, res) => {
+    try {
+      const deleted = await storage.deleteLabSection(req.params.sectionId);
+      if (!deleted) {
+        return res.status(404).json({ error: "القسم غير موجود" });
+      }
+      res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "خطأ في الخادم" });
     }
@@ -1927,6 +2060,93 @@ export async function registerRoutes(
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
+  // Video upload endpoint (admin/instructor)
+  app.post("/api/videos/upload", requireInstructor, videoUpload.single("video"), async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "لم يتم رفع ملف" });
+      }
+      const videoPath = `/api/videos/stream/${req.file.filename}`;
+      res.json({ videoPath, filename: req.file.filename });
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في رفع الفيديو" });
+    }
+  });
+
+  // Protected video streaming endpoint with Range support
+  app.get("/api/videos/stream/:filename", async (req: Request, res: Response) => {
+    try {
+      const filename = req.params.filename;
+      if (!filename || filename.includes("..") || filename.includes("/")) {
+        return res.status(400).json({ error: "اسم ملف غير صالح" });
+      }
+      const filePath = path.join(uploadsDir, filename);
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "الفيديو غير موجود" });
+      }
+
+      const stat = fs.statSync(filePath);
+      const fileSize = stat.size;
+      const ext = path.extname(filename).toLowerCase();
+      const mimeTypes: Record<string, string> = {
+        ".mp4": "video/mp4",
+        ".webm": "video/webm",
+        ".ogg": "video/ogg",
+        ".mov": "video/quicktime",
+        ".avi": "video/x-msvideo",
+      };
+      const contentType = mimeTypes[ext] || "video/mp4";
+
+      const range = req.headers.range;
+      if (range) {
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunkSize = end - start + 1;
+
+        const file = fs.createReadStream(filePath, { start, end });
+        res.writeHead(206, {
+          "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+          "Accept-Ranges": "bytes",
+          "Content-Length": chunkSize,
+          "Content-Type": contentType,
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+          "Content-Disposition": "inline",
+          "X-Content-Type-Options": "nosniff",
+        });
+        file.pipe(res);
+      } else {
+        res.writeHead(200, {
+          "Content-Length": fileSize,
+          "Content-Type": contentType,
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+          "Content-Disposition": "inline",
+          "X-Content-Type-Options": "nosniff",
+        });
+        fs.createReadStream(filePath).pipe(res);
+      }
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في تشغيل الفيديو" });
+    }
+  });
+
+  // Delete uploaded video
+  app.delete("/api/videos/:filename", requireInstructor, async (req: Request, res: Response) => {
+    try {
+      const filename = req.params.filename;
+      if (!filename || filename.includes("..") || filename.includes("/")) {
+        return res.status(400).json({ error: "اسم ملف غير صالح" });
+      }
+      const filePath = path.join(uploadsDir, filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في حذف الفيديو" });
     }
   });
 
