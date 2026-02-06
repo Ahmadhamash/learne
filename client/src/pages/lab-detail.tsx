@@ -266,25 +266,38 @@ export default function LabDetail() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Terminal className="h-5 w-5 text-primary" />
-                  بيئة المختبر
+                  التعليمات
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="bg-gray-900 rounded-lg p-6 text-green-400 font-mono text-sm">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-3 h-3 rounded-full bg-red-500" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                {(lab as any).instructions && (lab as any).instructions.length > 0 ? (
+                  <ol className="space-y-3 list-none">
+                    {(lab as any).instructions.map((instruction: string, index: number) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+                          {index + 1}
+                        </span>
+                        <span className="mt-0.5">{instruction}</span>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <div className="bg-gray-900 rounded-lg p-6 text-green-400 font-mono text-sm">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                    <p className="mb-2">$ cloud-lab init {lab.title.replace(/\s/g, '-').toLowerCase()}</p>
+                    <p className="text-gray-500 mb-2"># Initializing lab environment...</p>
+                    <p className="text-gray-500 mb-2"># Setting up {lab.technologies?.join(', ')}...</p>
+                    {labStarted ? (
+                      <p className="text-white">Lab is running! Complete the exercises and submit when done.</p>
+                    ) : (
+                      <p className="text-white">Ready to start! Click "بدء المختبر" to begin.</p>
+                    )}
                   </div>
-                  <p className="mb-2">$ cloud-lab init {lab.title.replace(/\s/g, '-').toLowerCase()}</p>
-                  <p className="text-gray-500 mb-2"># Initializing lab environment...</p>
-                  <p className="text-gray-500 mb-2"># Setting up {lab.technologies?.join(', ')}...</p>
-                  {labStarted ? (
-                    <p className="text-white">Lab is running! Complete the exercises and submit when done.</p>
-                  ) : (
-                    <p className="text-white">Ready to start! Click "بدء المختبر" to begin.</p>
-                  )}
-                </div>
+                )}
               </CardContent>
             </Card>
 
@@ -297,22 +310,33 @@ export default function LabDetail() {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
-                    <span>فهم أساسيات {lab.technologies?.[0] || "التقنية"}</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
-                    <span>تطبيق المفاهيم في بيئة عملية</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
-                    <span>حل المشكلات واستكشاف الأخطاء</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
-                    <span>الحصول على {lab.xpReward} نقطة خبرة</span>
-                  </li>
+                  {(lab as any).learningObjectives && (lab as any).learningObjectives.length > 0 ? (
+                    (lab as any).learningObjectives.map((objective: string, index: number) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
+                        <span>{objective}</span>
+                      </li>
+                    ))
+                  ) : (
+                    <>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
+                        <span>فهم أساسيات {lab.technologies?.[0] || "التقنية"}</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
+                        <span>تطبيق المفاهيم في بيئة عملية</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
+                        <span>حل المشكلات واستكشاف الأخطاء</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
+                        <span>الحصول على {lab.xpReward} نقطة خبرة</span>
+                      </li>
+                    </>
+                  )}
                 </ul>
               </CardContent>
             </Card>

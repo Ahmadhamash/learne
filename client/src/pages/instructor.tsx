@@ -239,6 +239,8 @@ interface LabFormData {
   description: string;
   about: string;
   environment: string;
+  instructions: string;
+  learningObjectives: string;
   icon: string;
   image: string;
   level: string;
@@ -253,6 +255,8 @@ const initialLabForm: LabFormData = {
   description: "",
   about: "",
   environment: "",
+  instructions: "",
+  learningObjectives: "",
   icon: "cloud",
   image: "",
   level: "مبتدئ",
@@ -432,6 +436,8 @@ export default function InstructorDashboard() {
       description: lab.description,
       about: lab.about || "",
       environment: lab.environment || "",
+      instructions: (lab as any).instructions?.join("\n") || "",
+      learningObjectives: (lab as any).learningObjectives?.join("\n") || "",
       icon: lab.icon || "cloud",
       image: lab.image || "",
       level: lab.level,
@@ -455,11 +461,23 @@ export default function InstructorDashboard() {
       .map((t) => t.trim())
       .filter((t) => t.length > 0);
 
+    const instructionsArray = labForm.instructions
+      .split("\n")
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+
+    const learningObjectivesArray = labForm.learningObjectives
+      .split("\n")
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+
     const labData = {
       title: labForm.title,
       description: labForm.description,
       about: labForm.about,
       environment: labForm.environment,
+      instructions: instructionsArray,
+      learningObjectives: learningObjectivesArray,
       icon: labForm.icon || "cloud",
       image: labForm.image || null,
       level: labForm.level,
@@ -1368,6 +1386,28 @@ export default function InstructorDashboard() {
                   value={labForm.environment}
                   onChange={(e) => setLabForm({ ...labForm, environment: e.target.value })}
                   placeholder="وصف البيئة التقنية للمختبر، مثل: نظام التشغيل، الأدوات المطلوبة، الإعدادات..."
+                  rows={4}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="lab-instructions">التعليمات (كل سطر = تعليمة مرقمة)</Label>
+                <Textarea
+                  id="lab-instructions"
+                  value={labForm.instructions}
+                  onChange={(e) => setLabForm({ ...labForm, instructions: e.target.value })}
+                  placeholder={"افتح وحدة التحكم السحابية\nأنشئ مشروعاً جديداً\nقم بإعداد الخدمات المطلوبة\nنفّذ الأوامر المذكورة"}
+                  rows={5}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="lab-learning-objectives">ما ستتعلمه (كل سطر = نقطة تعلم)</Label>
+                <Textarea
+                  id="lab-learning-objectives"
+                  value={labForm.learningObjectives}
+                  onChange={(e) => setLabForm({ ...labForm, learningObjectives: e.target.value })}
+                  placeholder={"فهم أساسيات الحوسبة السحابية\nتطبيق المفاهيم في بيئة عملية\nحل المشكلات واستكشاف الأخطاء"}
                   rows={4}
                 />
               </div>
