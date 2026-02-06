@@ -391,8 +391,9 @@ export async function registerRoutes(
   // Labs routes
   app.get("/api/labs", async (req, res) => {
     try {
-      const labs = await storage.getPublishedLabs();
-      res.json(labs);
+      const labs = await storage.getAllLabs();
+      const publishedLabs = labs.filter(lab => lab.isPublished);
+      res.json(publishedLabs);
     } catch (error) {
       res.status(500).json({ error: "خطأ في الخادم" });
     }
@@ -832,34 +833,31 @@ export async function registerRoutes(
     try {
       const instructorUser = (req as any).instructorUser;
       const labId = req.params.id;
-      
-      // Verify instructor owns this lab through their courses
-      const instructorCourses = await storage.getCoursesByInstructor(instructorUser.id);
-      const courseIds = instructorCourses.map(c => c.id);
-      
-      let hasAccess = false;
-      for (const courseId of courseIds) {
-        const lessons = await storage.getLessonsByCourse(courseId);
-        if (lessons.some(l => l.labId === labId)) {
-          hasAccess = true;
-          break;
-        }
-      }
-      
-      // Admin always has access
-      if (instructorUser.role === 'admin') {
-        hasAccess = true;
-      }
-      
-      if (!hasAccess) {
-        return res.status(403).json({ error: "غير مصرح بتعديل هذا المختبر" });
-      }
-      
-      const lab = await storage.updateLab(labId, req.body);
+      const lab = await storage.getLab(labId);
       if (!lab) {
         return res.status(404).json({ error: "المختبر غير موجود" });
       }
-      res.json(lab);
+
+      if (lab.creatorId !== instructorUser.id && instructorUser.role !== 'admin') {
+        const instructorCourses = await storage.getCoursesByInstructor(instructorUser.id);
+        const courseIds = instructorCourses.map(c => c.id);
+        
+        let hasAccess = false;
+        for (const courseId of courseIds) {
+          const lessons = await storage.getLessonsByCourse(courseId);
+          if (lessons.some(l => l.labId === labId)) {
+            hasAccess = true;
+            break;
+          }
+        }
+        
+        if (!hasAccess) {
+          return res.status(403).json({ error: "غير مصرح بتعديل هذا المختبر" });
+        }
+      }
+      
+      const updatedLab = await storage.updateLab(labId, req.body);
+      res.json(updatedLab);
     } catch (error) {
       res.status(500).json({ error: "خطأ في الخادم" });
     }
