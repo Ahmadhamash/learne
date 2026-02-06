@@ -41,6 +41,7 @@ script/          - Build scripts
 - `PORT` - Server port (defaults to 5000)
 
 ## Recent Changes
+- **Section-based Lab Submissions**: Each lab has sections created by instructor, each section requires student submission (image + description), per-section status tracking (pending/approved/rejected)
 - **Video Upload/Streaming**: Protected video upload (500MB, MP4/WebM/OGG) with multer, streaming with Range requests, download prevention
 - **Instructor Lab Management**: Full CRUD for labs (create, edit, delete) + lab content (sections) management via instructor dashboard
 - **Lab Content Page**: Supports both admin and instructor roles with dynamic API routing

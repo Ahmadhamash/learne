@@ -131,6 +131,7 @@ export interface IStorage {
   // Lab Submissions CRUD
   getLabSubmission(id: string): Promise<LabSubmission | undefined>;
   getLabSubmissionsByUser(userId: string): Promise<LabSubmission[]>;
+  getLabSubmissionsByUserAndLab(userId: string, labId: string): Promise<LabSubmission[]>;
   getLabSubmissionsByLab(labId: string): Promise<LabSubmission[]>;
   getLabSubmissionsForInstructor(instructorId: string): Promise<LabSubmissionWithDetails[]>;
   getAllLabSubmissions(): Promise<LabSubmissionWithDetails[]>;
@@ -702,6 +703,12 @@ export class DatabaseStorage implements IStorage {
 
   async getLabSubmissionsByUser(userId: string): Promise<LabSubmission[]> {
     return db.select().from(labSubmissions).where(eq(labSubmissions.userId, userId)).orderBy(desc(labSubmissions.submittedAt));
+  }
+
+  async getLabSubmissionsByUserAndLab(userId: string, labId: string): Promise<LabSubmission[]> {
+    return db.select().from(labSubmissions)
+      .where(and(eq(labSubmissions.userId, userId), eq(labSubmissions.labId, labId)))
+      .orderBy(desc(labSubmissions.submittedAt));
   }
 
   async getLabSubmissionsByLab(labId: string): Promise<LabSubmission[]> {

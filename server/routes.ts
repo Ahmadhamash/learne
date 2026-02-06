@@ -430,6 +430,10 @@ export async function registerRoutes(
       if (!lab) {
         return res.status(404).json({ error: "المختبر غير موجود" });
       }
+      const section = await storage.getLabSection(req.params.sectionId);
+      if (!section || section.labId !== req.params.id) {
+        return res.status(404).json({ error: "القسم غير موجود" });
+      }
       const { screenshotUrl, details } = req.body;
       const submission = await storage.createLabSubmission({
         userId,
@@ -452,9 +456,8 @@ export async function registerRoutes(
       if (!userId) {
         return res.status(401).json({ error: "غير مصرح" });
       }
-      const allSubmissions = await storage.getLabSubmissionsByUser(userId);
-      const labSubmissions = allSubmissions.filter(s => s.labId === req.params.id);
-      res.json(labSubmissions);
+      const submissions = await storage.getLabSubmissionsByUserAndLab(userId, req.params.id);
+      res.json(submissions);
     } catch (error) {
       res.status(500).json({ error: "خطأ في الخادم" });
     }

@@ -9,25 +9,27 @@ import {
   CheckCircle,
   ChevronLeft,
   Loader2,
-  Terminal,
   Zap,
   Upload,
   Image as ImageIcon,
   X,
-  Timer
+  Timer,
+  ListOrdered,
+  Send,
+  FileText,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { Lab, LabProgress } from "@shared/schema";
+import type { Lab, LabProgress, LabSection, LabSubmission } from "@shared/schema";
 
 function formatTime(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
@@ -47,15 +49,25 @@ export default function LabDetail() {
 
   const [labStarted, setLabStarted] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [submitModalOpen, setSubmitModalOpen] = useState(false);
-  const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
-  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
-  const [details, setDetails] = useState("");
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
+  const [sectionScreenshots, setSectionScreenshots] = useState<Record<string, { file: File; preview: string }>>({});
+  const [sectionDetails, setSectionDetails] = useState<Record<string, string>>({});
+
   const { data: lab, isLoading } = useQuery<Lab>({
     queryKey: ["/api/labs", labId],
+    enabled: !!labId,
+  });
+
+  const { data: sections = [] } = useQuery<LabSection[]>({
+    queryKey: ["/api/labs", labId, "sections"],
+    queryFn: async () => {
+      const response = await fetch(`/api/labs/${labId}/sections`);
+      if (!response.ok) return [];
+      return response.json();
+    },
     enabled: !!labId,
   });
 
@@ -72,11 +84,22 @@ export default function LabDetail() {
     enabled: !!labId && !!user,
   });
 
-  // Check if lab was already started
+  const { data: mySubmissions = [] } = useQuery<LabSubmission[]>({
+    queryKey: ["/api/labs", labId, "my-submissions"],
+    queryFn: async () => {
+      if (!user) return [];
+      const response = await fetch(`/api/labs/${labId}/my-submissions`, {
+        headers: { "X-User-Id": user.id }
+      });
+      if (!response.ok) return [];
+      return response.json();
+    },
+    enabled: !!labId && !!user,
+  });
+
   useEffect(() => {
     if (labProgress && !labProgress.isCompleted) {
       setLabStarted(true);
-      // Calculate elapsed time from when the lab was started
       const startTime = new Date(labProgress.startedAt!).getTime();
       const now = Date.now();
       const elapsed = Math.floor((now - startTime) / 1000);
@@ -85,7 +108,6 @@ export default function LabDetail() {
     }
   }, [labProgress]);
 
-  // Timer effect
   useEffect(() => {
     if (labStarted && !labProgress?.isCompleted) {
       timerRef.current = setInterval(() => {
@@ -114,8 +136,47 @@ export default function LabDetail() {
       setLabStarted(true);
       startTimeRef.current = new Date(data.startedAt!).getTime();
       setElapsedTime(0);
-      toast({ title: "تم بدء المختبر", description: "يمكنك الآن البدء بالتجربة - الوقت يعمل!" });
+      toast({ title: "تم بدء المختبر", description: "يمكنك الآن البدء بالتجربة" });
       queryClient.invalidateQueries({ queryKey: ["/api/labs", labId, "progress"] });
+    },
+    onError: (error: Error) => {
+      toast({ title: "خطأ", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const submitSectionMutation = useMutation({
+    mutationFn: async (sectionId: string) => {
+      if (!user) throw new Error("يجب تسجيل الدخول أولاً");
+      
+      let screenshotUrl: string | null = null;
+      const screenshotData = sectionScreenshots[sectionId];
+      if (screenshotData?.file) {
+        screenshotUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(screenshotData.file);
+        });
+      }
+      
+      return apiRequest("POST", `/api/labs/${labId}/sections/${sectionId}/submit`, {
+        screenshotUrl,
+        details: sectionDetails[sectionId] || "",
+      });
+    },
+    onSuccess: (_data, sectionId) => {
+      setSectionScreenshots(prev => {
+        const next = { ...prev };
+        delete next[sectionId];
+        return next;
+      });
+      setSectionDetails(prev => {
+        const next = { ...prev };
+        delete next[sectionId];
+        return next;
+      });
+      setActiveSectionId(null);
+      toast({ title: "تم تسليم القسم بنجاح!", description: "تم إرسال عملك للمراجعة" });
+      queryClient.invalidateQueries({ queryKey: ["/api/labs", labId, "my-submissions"] });
     },
     onError: (error: Error) => {
       toast({ title: "خطأ", description: error.message, variant: "destructive" });
@@ -125,21 +186,8 @@ export default function LabDetail() {
   const submitLabMutation = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("يجب تسجيل الدخول أولاً");
-      
-      let screenshotUrl = null;
-      
-      // If there's a screenshot, convert to base64 data URL
-      if (screenshotFile) {
-        screenshotUrl = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(screenshotFile);
-        });
-      }
-      
       return apiRequest("POST", `/api/labs/${labId}/submit`, {
-        screenshotUrl,
-        details,
+        details: "تم إكمال جميع الأقسام",
         timeSpent: elapsedTime,
       });
     },
@@ -148,39 +196,47 @@ export default function LabDetail() {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
-      setSubmitModalOpen(false);
-      setScreenshotPreview(null);
-      setScreenshotFile(null);
-      setDetails("");
       toast({ 
-        title: "تم تسليم المختبر!", 
-        description: `تم إرسال المختبر للمراجعة وحصلت على ${lab?.xpReward} XP` 
+        title: "تم إكمال المختبر!", 
+        description: `حصلت على ${lab?.xpReward} XP` 
       });
       queryClient.invalidateQueries({ queryKey: ["/api/labs", labId, "progress"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user/lab-submissions"] });
     },
     onError: (error: Error) => {
       toast({ title: "خطأ", description: error.message, variant: "destructive" });
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSectionFileChange = (sectionId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setScreenshotFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setScreenshotPreview(reader.result as string);
+        setSectionScreenshots(prev => ({
+          ...prev,
+          [sectionId]: { file, preview: reader.result as string }
+        }));
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const removeScreenshot = () => {
-    setScreenshotFile(null);
-    setScreenshotPreview(null);
+  const removeSectionScreenshot = (sectionId: string) => {
+    setSectionScreenshots(prev => {
+      const next = { ...prev };
+      delete next[sectionId];
+      return next;
+    });
   };
+
+  const getSectionSubmission = (sectionId: string) => {
+    return mySubmissions.find(s => s.sectionId === sectionId);
+  };
+
+  const allSectionsSubmitted = sections.length > 0 && sections.every(s => getSectionSubmission(s.id));
+
+  const isCompleted = labProgress?.isCompleted;
 
   if (isLoading) {
     return (
@@ -211,8 +267,6 @@ export default function LabDetail() {
       </div>
     );
   }
-
-  const isCompleted = labProgress?.isCompleted;
 
   return (
     <div className="min-h-screen pt-20 pb-10">
@@ -247,13 +301,13 @@ export default function LabDetail() {
 
       <div className="container mx-auto px-4 -mt-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>عن المختبر</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground leading-relaxed mb-6">{lab.description}</p>
+                <p className="text-muted-foreground leading-relaxed mb-4">{lab.description}</p>
                 <div className="flex flex-wrap gap-2">
                   {lab.technologies?.map((tech) => (
                     <Badge key={tech} variant="outline">{tech}</Badge>
@@ -262,84 +316,185 @@ export default function LabDetail() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Terminal className="h-5 w-5 text-primary" />
-                  التعليمات
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {(lab as any).instructions && (lab as any).instructions.length > 0 ? (
-                  <ol className="space-y-3 list-none">
-                    {(lab as any).instructions.map((instruction: string, index: number) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
-                          {index + 1}
-                        </span>
-                        <span className="mt-0.5">{instruction}</span>
-                      </li>
-                    ))}
-                  </ol>
-                ) : (
-                  <div className="bg-gray-900 rounded-lg p-6 text-green-400 font-mono text-sm">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-3 h-3 rounded-full bg-red-500" />
-                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                      <div className="w-3 h-3 rounded-full bg-green-500" />
-                    </div>
-                    <p className="mb-2">$ cloud-lab init {lab.title.replace(/\s/g, '-').toLowerCase()}</p>
-                    <p className="text-gray-500 mb-2"># Initializing lab environment...</p>
-                    <p className="text-gray-500 mb-2"># Setting up {lab.technologies?.join(', ')}...</p>
-                    {labStarted ? (
-                      <p className="text-white">Lab is running! Complete the exercises and submit when done.</p>
-                    ) : (
-                      <p className="text-white">Ready to start! Click "بدء المختبر" to begin.</p>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {sections.length > 0 && (
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <ListOrdered className="h-5 w-5 text-primary" />
+                  أقسام المختبر ({sections.length} أقسام)
+                </h2>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-chart-4" />
-                  ما ستتعلمه
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  {(lab as any).learningObjectives && (lab as any).learningObjectives.length > 0 ? (
-                    (lab as any).learningObjectives.map((objective: string, index: number) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
-                        <span>{objective}</span>
-                      </li>
-                    ))
-                  ) : (
-                    <>
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
-                        <span>فهم أساسيات {lab.technologies?.[0] || "التقنية"}</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
-                        <span>تطبيق المفاهيم في بيئة عملية</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
-                        <span>حل المشكلات واستكشاف الأخطاء</span>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-chart-4 mt-0.5" />
-                        <span>الحصول على {lab.xpReward} نقطة خبرة</span>
-                      </li>
-                    </>
-                  )}
-                </ul>
-              </CardContent>
-            </Card>
+                {sections.map((section, index) => {
+                  const submission = getSectionSubmission(section.id);
+                  const isActive = activeSectionId === section.id;
+                  const isPending = submission?.status === "pending";
+                  const isApproved = submission?.status === "approved";
+                  const isRejected = submission?.status === "rejected";
+
+                  return (
+                    <Card key={section.id} className={`transition-all ${isApproved ? 'border-green-500/50 bg-green-50/50 dark:bg-green-950/20' : isPending ? 'border-yellow-500/50 bg-yellow-50/50 dark:bg-yellow-950/20' : isRejected ? 'border-red-500/50 bg-red-50/50 dark:bg-red-950/20' : ''}`}>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-3">
+                            <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${isApproved ? 'bg-green-500 text-white' : isPending ? 'bg-yellow-500 text-white' : isRejected ? 'bg-red-500 text-white' : 'bg-primary text-primary-foreground'}`}>
+                              {isApproved ? <CheckCircle className="h-4 w-4" /> : index + 1}
+                            </span>
+                            <div>
+                              <CardTitle className="text-lg">{section.title}</CardTitle>
+                              {submission && (
+                                <Badge variant="outline" className={`mt-1 ${isApproved ? 'text-green-600 border-green-500' : isPending ? 'text-yellow-600 border-yellow-500' : 'text-red-600 border-red-500'}`}>
+                                  {isApproved ? "تمت الموافقة" : isPending ? "قيد المراجعة" : "مرفوض"}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {section.content && (
+                          <div className="bg-muted/50 rounded-lg p-4">
+                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{section.content}</p>
+                          </div>
+                        )}
+
+                        {section.instructions && (
+                          <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
+                            <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                              <FileText className="h-4 w-4 text-primary" />
+                              المهمة المطلوبة
+                            </h4>
+                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{section.instructions}</p>
+                          </div>
+                        )}
+
+                        {submission && submission.screenshotUrl && (
+                          <div className="mt-3">
+                            <p className="text-sm font-medium mb-2">التسليم السابق:</p>
+                            <img 
+                              src={submission.screenshotUrl} 
+                              alt="التسليم" 
+                              className="w-full max-h-64 object-cover rounded-lg border"
+                            />
+                            {submission.details && (
+                              <p className="text-sm text-muted-foreground mt-2 bg-muted p-3 rounded-lg">{submission.details}</p>
+                            )}
+                          </div>
+                        )}
+
+                        {submission && !submission.screenshotUrl && submission.details && (
+                          <div className="mt-3">
+                            <p className="text-sm font-medium mb-2">التسليم السابق:</p>
+                            <p className="text-sm text-muted-foreground bg-muted p-3 rounded-lg">{submission.details}</p>
+                          </div>
+                        )}
+
+                        {isRejected && submission?.reviewNotes && (
+                          <div className="bg-red-50 dark:bg-red-950/30 rounded-lg p-3 border border-red-200 dark:border-red-800">
+                            <p className="text-sm text-red-700 dark:text-red-300 flex items-start gap-2">
+                              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                              <span>ملاحظات المراجع: {submission.reviewNotes}</span>
+                            </p>
+                          </div>
+                        )}
+
+                        {user && labStarted && !isCompleted && !isApproved && !isPending && (
+                          <>
+                            {!isActive ? (
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => setActiveSectionId(section.id)}
+                                className="w-full"
+                              >
+                                <Send className="h-4 w-4 ml-2" />
+                                {isRejected ? "إعادة التسليم" : "تسليم هذا القسم"}
+                              </Button>
+                            ) : (
+                              <div className="space-y-3 border-t pt-4">
+                                <div className="space-y-2">
+                                  <Label>صورة من العمل المنجز</Label>
+                                  {sectionScreenshots[section.id]?.preview ? (
+                                    <div className="relative">
+                                      <img 
+                                        src={sectionScreenshots[section.id].preview} 
+                                        alt="معاينة" 
+                                        className="w-full h-48 object-cover rounded-lg"
+                                      />
+                                      <Button
+                                        variant="destructive"
+                                        size="icon"
+                                        className="absolute top-2 left-2 h-7 w-7"
+                                        onClick={() => removeSectionScreenshot(section.id)}
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <div className="border-2 border-dashed rounded-lg p-4 text-center hover:border-primary transition-colors">
+                                      <Input
+                                        id={`screenshot-${section.id}`}
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) => handleSectionFileChange(section.id, e)}
+                                      />
+                                      <label htmlFor={`screenshot-${section.id}`} className="cursor-pointer">
+                                        <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-1" />
+                                        <p className="text-xs text-muted-foreground">اضغط لرفع صورة</p>
+                                      </label>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label>وصف العمل المنجز</Label>
+                                  <Textarea
+                                    placeholder="اكتب عما أنجزته في هذا القسم..."
+                                    value={sectionDetails[section.id] || ""}
+                                    onChange={(e) => setSectionDetails(prev => ({ ...prev, [section.id]: e.target.value }))}
+                                    rows={3}
+                                  />
+                                </div>
+
+                                <div className="flex gap-2">
+                                  <Button 
+                                    onClick={() => submitSectionMutation.mutate(section.id)}
+                                    disabled={submitSectionMutation.isPending}
+                                    size="sm"
+                                  >
+                                    {submitSectionMutation.isPending ? (
+                                      <Loader2 className="h-4 w-4 animate-spin ml-2" />
+                                    ) : (
+                                      <Send className="h-4 w-4 ml-2" />
+                                    )}
+                                    إرسال التسليم
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={() => setActiveSectionId(null)}
+                                  >
+                                    إلغاء
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+
+            {sections.length === 0 && (
+              <Card>
+                <CardContent className="py-8 text-center text-muted-foreground">
+                  <ListOrdered className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p>لم يتم إضافة أقسام لهذا المختبر بعد</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           <div className="space-y-6">
@@ -349,7 +504,6 @@ export default function LabDetail() {
                   <FlaskConical className="h-10 w-10 text-white" />
                 </div>
 
-                {/* Timer Display */}
                 {labStarted && !isCompleted && (
                   <div className="mb-6 p-4 bg-muted rounded-lg text-center">
                     <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-1">
@@ -358,6 +512,23 @@ export default function LabDetail() {
                     </div>
                     <div className="text-3xl font-mono font-bold text-primary" data-testid="text-timer">
                       {formatTime(elapsedTime)}
+                    </div>
+                  </div>
+                )}
+
+                {labStarted && !isCompleted && sections.length > 0 && (
+                  <div className="mb-6 p-4 bg-muted rounded-lg">
+                    <p className="text-sm font-medium mb-2">تقدم الأقسام</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-background rounded-full h-3 overflow-hidden">
+                        <div 
+                          className="bg-primary h-full rounded-full transition-all duration-500"
+                          style={{ width: `${sections.length > 0 ? (sections.filter(s => getSectionSubmission(s.id)).length / sections.length) * 100 : 0}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-mono">
+                        {sections.filter(s => getSectionSubmission(s.id)).length}/{sections.length}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -396,12 +567,22 @@ export default function LabDetail() {
                       <Button 
                         className="w-full bg-gradient-primary" 
                         size="lg"
-                        onClick={() => setSubmitModalOpen(true)}
+                        onClick={() => submitLabMutation.mutate()}
+                        disabled={submitLabMutation.isPending || (sections.length > 0 && !allSectionsSubmitted)}
                         data-testid="button-complete-lab"
                       >
-                        <CheckCircle className="h-4 w-4 ml-2" />
+                        {submitLabMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 animate-spin ml-2" />
+                        ) : (
+                          <CheckCircle className="h-4 w-4 ml-2" />
+                        )}
                         إتمام المختبر
                       </Button>
+                    )}
+                    {labStarted && !isCompleted && sections.length > 0 && !allSectionsSubmitted && (
+                      <p className="text-xs text-center text-muted-foreground">
+                        يجب تسليم جميع الأقسام قبل إتمام المختبر
+                      </p>
                     )}
                   </div>
                 ) : (
@@ -423,8 +604,8 @@ export default function LabDetail() {
                     <span>المستوى: {lab.level}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Terminal className="h-4 w-4 text-chart-4" />
-                    <span>بيئة تفاعلية كاملة</span>
+                    <ListOrdered className="h-4 w-4 text-chart-4" />
+                    <span>{sections.length} أقسام</span>
                   </div>
                 </div>
               </CardContent>
@@ -432,87 +613,6 @@ export default function LabDetail() {
           </div>
         </div>
       </div>
-
-      {/* Submit Lab Modal */}
-      <Dialog open={submitModalOpen} onOpenChange={setSubmitModalOpen}>
-        <DialogContent className="sm:max-w-md" dir="rtl">
-          <DialogHeader>
-            <DialogTitle className="text-right">تسليم المختبر</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="text-center p-3 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground">الوقت المستغرق</p>
-              <p className="text-2xl font-mono font-bold">{formatTime(elapsedTime)}</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="screenshot">صورة من المختبر (اختياري)</Label>
-              {screenshotPreview ? (
-                <div className="relative">
-                  <img 
-                    src={screenshotPreview} 
-                    alt="Screenshot preview" 
-                    className="w-full h-48 object-cover rounded-lg"
-                  />
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    className="absolute top-2 left-2"
-                    onClick={removeScreenshot}
-                    data-testid="button-remove-screenshot"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ) : (
-                <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary transition-colors">
-                  <Input
-                    id="screenshot"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileChange}
-                    data-testid="input-screenshot"
-                  />
-                  <label htmlFor="screenshot" className="cursor-pointer">
-                    <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground">اضغط لرفع صورة من المختبر</p>
-                  </label>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="details">تفاصيل عن العمل المنجز</Label>
-              <Textarea
-                id="details"
-                placeholder="اكتب ملخصاً عما أنجزته في هذا المختبر..."
-                value={details}
-                onChange={(e) => setDetails(e.target.value)}
-                rows={4}
-                data-testid="input-details"
-              />
-            </div>
-          </div>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setSubmitModalOpen(false)}>
-              إلغاء
-            </Button>
-            <Button 
-              onClick={() => submitLabMutation.mutate()}
-              disabled={submitLabMutation.isPending}
-              data-testid="button-submit-lab"
-            >
-              {submitLabMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin ml-2" />
-              ) : (
-                <CheckCircle className="h-4 w-4 ml-2" />
-              )}
-              تسليم المختبر
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
