@@ -715,11 +715,11 @@ export class DatabaseStorage implements IStorage {
 
     // Get all sections for those courses
     const courseIds = instructorCourses.map(c => c.id);
-    const courseSections = await db.select().from(sections).where(inArray(sections.courseId, courseIds));
-    if (courseSections.length === 0) return [];
+    const courseSectionsList = await db.select().from(courseSections).where(inArray(courseSections.courseId, courseIds));
+    if (courseSectionsList.length === 0) return [];
 
     // Get all lessons with labId for those sections
-    const sectionIds = courseSections.map(s => s.id);
+    const sectionIds = courseSectionsList.map(s => s.id);
     const courseLessons = await db.select().from(lessons).where(
       and(
         inArray(lessons.sectionId, sectionIds),
