@@ -218,6 +218,8 @@ export const labs = pgTable("labs", {
   description: text("description").notNull(),
   about: text("about"),
   environment: text("environment"),
+  instructions: text("instructions").array(),
+  learningObjectives: text("learning_objectives").array(),
   icon: text("icon").notNull(),
   color: text("color").notNull(),
   image: text("image"),
