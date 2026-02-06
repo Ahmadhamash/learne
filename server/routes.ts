@@ -411,6 +411,55 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/labs/:id/sections", async (req, res) => {
+    try {
+      const sections = await storage.getLabSections(req.params.id);
+      res.json(sections);
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
+  app.post("/api/labs/:id/sections/:sectionId/submit", async (req, res) => {
+    try {
+      const userId = req.headers["x-user-id"] as string;
+      if (!userId) {
+        return res.status(401).json({ error: "غير مصرح" });
+      }
+      const lab = await storage.getLab(req.params.id);
+      if (!lab) {
+        return res.status(404).json({ error: "المختبر غير موجود" });
+      }
+      const { screenshotUrl, details } = req.body;
+      const submission = await storage.createLabSubmission({
+        userId,
+        labId: req.params.id,
+        sectionId: req.params.sectionId,
+        screenshotUrl,
+        details,
+        timeSpent: 0,
+        status: "pending",
+      });
+      res.status(201).json(submission);
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
+  app.get("/api/labs/:id/my-submissions", async (req, res) => {
+    try {
+      const userId = req.headers["x-user-id"] as string;
+      if (!userId) {
+        return res.status(401).json({ error: "غير مصرح" });
+      }
+      const allSubmissions = await storage.getLabSubmissionsByUser(userId);
+      const labSubmissions = allSubmissions.filter(s => s.labId === req.params.id);
+      res.json(labSubmissions);
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
   app.get("/api/labs/all", async (req, res) => {
     try {
       const labs = await storage.getAllLabs();

@@ -282,6 +282,7 @@ export const labSubmissions = pgTable("lab_submissions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
   labId: varchar("lab_id").notNull(),
+  sectionId: varchar("section_id"),
   screenshotUrl: text("screenshot_url"),
   details: text("details"),
   timeSpent: integer("time_spent").notNull().default(0), // in seconds
