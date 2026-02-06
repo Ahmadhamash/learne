@@ -809,7 +809,6 @@ export async function registerRoutes(
       const instructorCourses = await storage.getCoursesByInstructor(instructorUser.id);
       const courseIds = instructorCourses.map(c => c.id);
       
-      // Get all labs that are linked to lessons in instructor's courses
       const allLabs = await storage.getAllLabs();
       const allLessons = [];
       for (const courseId of courseIds) {
@@ -817,9 +816,10 @@ export async function registerRoutes(
         allLessons.push(...lessons);
       }
       
-      // Filter labs that have lessons in instructor's courses
       const labIdsInCourses = new Set(allLessons.filter(l => l.labId).map(l => l.labId));
-      const instructorLabs = allLabs.filter(lab => labIdsInCourses.has(lab.id));
+      const instructorLabs = allLabs.filter(lab => 
+        labIdsInCourses.has(lab.id) || lab.creatorId === instructorUser.id
+      );
       
       res.json(instructorLabs);
     } catch (error) {
@@ -868,11 +868,12 @@ export async function registerRoutes(
   // Instructor can create labs
   app.post("/api/instructor/labs", requireInstructor, async (req, res) => {
     try {
+      const instructorUser = (req as any).instructorUser;
       const result = insertLabSchema.safeParse(req.body);
       if (!result.success) {
         return res.status(400).json({ error: "بيانات المختبر غير صحيحة", details: result.error.flatten() });
       }
-      const lab = await storage.createLab(result.data);
+      const lab = await storage.createLab({ ...result.data, creatorId: instructorUser.id });
       res.status(201).json(lab);
     } catch (error) {
       res.status(500).json({ error: "خطأ في الخادم" });

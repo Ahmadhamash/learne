@@ -221,6 +221,7 @@ export const labs = pgTable("labs", {
   icon: text("icon").notNull(),
   color: text("color").notNull(),
   image: text("image"),
+  creatorId: varchar("creator_id"),
   duration: integer("duration").notNull(),
   level: text("level").notNull(),
   technologies: text("technologies").array(),
