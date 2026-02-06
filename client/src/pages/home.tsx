@@ -46,10 +46,10 @@ function CourseCard({ course }: { course: CourseWithInstructor }) {
             <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
             <span className="text-xs text-white font-medium">{course.rating}</span>
           </div>
-          <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-lg p-2">
-            <div className="text-lg font-bold text-foreground">{course.price} د.أ</div>
+          <div className="absolute bottom-3 right-3 bg-white rounded-lg px-3 py-2 shadow-lg">
+            <div className="text-lg font-bold text-emerald-600">{course.price} د.أ</div>
             {course.originalPrice && (
-              <div className="text-xs text-muted-foreground line-through">{course.originalPrice} د.أ</div>
+              <div className="text-xs text-red-500 line-through">{course.originalPrice} د.أ</div>
             )}
           </div>
         </div>
@@ -366,8 +366,8 @@ export default function Home() {
                             عرض خاص
                           </Badge>
                         </div>
-                        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm rounded-lg p-2">
-                          <div className="text-lg font-bold text-foreground">{course.price} د.أ</div>
+                        <div className="absolute bottom-3 right-3 bg-white rounded-lg px-3 py-2 shadow-lg">
+                          <div className="text-lg font-bold text-emerald-600">{course.price} د.أ</div>
                           {course.originalPrice && (
                             <div className="text-xs text-red-500 line-through">{course.originalPrice} د.أ</div>
                           )}

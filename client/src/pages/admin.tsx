@@ -169,6 +169,7 @@ export default function AdminDashboard() {
   const [courseForm, setCourseForm] = useState({
     title: "",
     description: "",
+    image: "",
     category: "AWS",
     level: "مبتدئ",
     duration: "",
@@ -183,6 +184,7 @@ export default function AdminDashboard() {
   const [labForm, setLabForm] = useState({
     title: "",
     description: "",
+    image: "",
     icon: "flask-conical",
     color: "from-blue-500 to-indigo-500",
     duration: 30,
@@ -563,11 +565,11 @@ export default function AdminDashboard() {
   };
 
   const resetCourseForm = () => {
-    setCourseForm({ title: "", description: "", category: "AWS", level: "مبتدئ", duration: "", price: 0, instructorId: "", lessonsCount: 0, projectsCount: 0, difficulty: 1, isPublished: false });
+    setCourseForm({ title: "", description: "", image: "", category: "AWS", level: "مبتدئ", duration: "", price: 0, instructorId: "", lessonsCount: 0, projectsCount: 0, difficulty: 1, isPublished: false });
   };
 
   const resetLabForm = () => {
-    setLabForm({ title: "", description: "", icon: "flask-conical", color: "from-blue-500 to-indigo-500", duration: 30, level: "مبتدئ", xpReward: 100, isPublished: false });
+    setLabForm({ title: "", description: "", image: "", icon: "flask-conical", color: "from-blue-500 to-indigo-500", duration: 30, level: "مبتدئ", xpReward: 100, isPublished: false });
   };
 
   const resetPathForm = () => {
@@ -593,6 +595,7 @@ export default function AdminDashboard() {
     setCourseForm({
       title: c.title,
       description: c.description,
+      image: c.image || "",
       category: c.category,
       level: c.level,
       duration: c.duration,
@@ -611,6 +614,7 @@ export default function AdminDashboard() {
     setLabForm({
       title: l.title,
       description: l.description,
+      image: l.image || "",
       icon: l.icon,
       color: l.color,
       duration: l.duration,
@@ -1939,6 +1943,19 @@ export default function AdminDashboard() {
                 data-testid="input-course-description"
               />
             </div>
+            <div className="grid gap-2">
+              <Label htmlFor="courseImage">رابط صورة الدورة (URL)</Label>
+              <Input 
+                id="courseImage" 
+                value={courseForm.image} 
+                onChange={(e) => setCourseForm({...courseForm, image: e.target.value})}
+                placeholder="https://example.com/image.png"
+                dir="ltr"
+              />
+              {courseForm.image && (
+                <img src={courseForm.image} alt="معاينة" className="h-24 w-40 object-cover rounded-lg border" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
+              )}
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="category">الفئة</Label>
@@ -2055,6 +2072,19 @@ export default function AdminDashboard() {
                 rows={3}
                 data-testid="input-lab-description"
               />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="labImage">رابط صورة المختبر (URL)</Label>
+              <Input 
+                id="labImage" 
+                value={labForm.image} 
+                onChange={(e) => setLabForm({...labForm, image: e.target.value})}
+                placeholder="https://example.com/image.png"
+                dir="ltr"
+              />
+              {labForm.image && (
+                <img src={labForm.image} alt="معاينة" className="h-24 w-40 object-cover rounded-lg border" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">

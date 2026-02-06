@@ -237,6 +237,8 @@ const initialCourseForm: CourseFormData = {
 interface LabFormData {
   title: string;
   description: string;
+  about: string;
+  environment: string;
   level: string;
   duration: number;
   xpReward: number;
@@ -247,6 +249,8 @@ interface LabFormData {
 const initialLabForm: LabFormData = {
   title: "",
   description: "",
+  about: "",
+  environment: "",
   level: "مبتدئ",
   duration: 30,
   xpReward: 100,
@@ -422,6 +426,8 @@ export default function InstructorDashboard() {
     setLabForm({
       title: lab.title,
       description: lab.description,
+      about: lab.about || "",
+      environment: lab.environment || "",
       level: lab.level,
       duration: lab.duration,
       xpReward: lab.xpReward,
@@ -446,6 +452,8 @@ export default function InstructorDashboard() {
     const labData = {
       title: labForm.title,
       description: labForm.description,
+      about: labForm.about,
+      environment: labForm.environment,
       level: labForm.level,
       duration: labForm.duration,
       xpReward: labForm.xpReward,
@@ -1331,6 +1339,28 @@ export default function InstructorDashboard() {
                   onChange={(e) => setLabForm({ ...labForm, description: e.target.value })}
                   placeholder="أدخل وصفاً تفصيلياً للمختبر"
                   rows={3}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="lab-about">عن المختبر</Label>
+                <Textarea
+                  id="lab-about"
+                  value={labForm.about}
+                  onChange={(e) => setLabForm({ ...labForm, about: e.target.value })}
+                  placeholder="نبذة تفصيلية عن المختبر وأهدافه ومخرجاته التعليمية"
+                  rows={4}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="lab-environment">بيئة المختبر</Label>
+                <Textarea
+                  id="lab-environment"
+                  value={labForm.environment}
+                  onChange={(e) => setLabForm({ ...labForm, environment: e.target.value })}
+                  placeholder="وصف البيئة التقنية للمختبر، مثل: نظام التشغيل، الأدوات المطلوبة، الإعدادات..."
+                  rows={4}
                 />
               </div>
 
