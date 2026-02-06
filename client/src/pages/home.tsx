@@ -13,7 +13,9 @@ import {
   Cloud,
   Flame,
   Crown,
-  GraduationCap
+  GraduationCap,
+  Sparkles,
+  Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -24,24 +26,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
 import type { CourseWithInstructor, Lab, User, LearningPathWithCourses } from "@shared/schema";
 
-function StatCard({ icon: Icon, value, label, gradient }: { 
-  icon: React.ElementType; 
-  value: string; 
-  label: string; 
-  gradient: string;
-}) {
-  return (
-    <Card className="text-center hover-elevate">
-      <CardContent className="pt-6">
-        <div className={`w-14 h-14 mx-auto mb-4 ${gradient} rounded-xl flex items-center justify-center`}>
-          <Icon className="h-6 w-6 text-white" />
-        </div>
-        <div className="text-3xl font-bold text-primary mb-1">{value}</div>
-        <div className="text-sm text-muted-foreground">{label}</div>
-      </CardContent>
-    </Card>
-  );
-}
 
 function CourseCard({ course }: { course: CourseWithInstructor }) {
   return (
@@ -272,82 +256,157 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 max-w-4xl mx-auto">
-            <StatCard icon={Users} value="8,500+" label="متعلم نشط" gradient="bg-gradient-to-r from-primary to-secondary" />
-            <StatCard icon={BookOpen} value="12+" label="مسار سحابي" gradient="bg-gradient-to-r from-chart-4 to-teal-500" />
-            <StatCard icon={FlaskConical} value="60+" label="مختبر تفاعلي" gradient="bg-gradient-to-r from-secondary to-accent" />
-            <StatCard icon={Trophy} value="98.1%" label="معدل النجاح" gradient="bg-gradient-to-r from-accent to-orange-500" />
-          </div>
-        </div>
-      </section>
+          <div className="mt-16 max-w-5xl mx-auto overflow-hidden">
+            <p className="text-center text-sm text-muted-foreground mb-6 font-medium tracking-wide">
+              نعلّمك تقنيات أكبر مزودي الخدمات السحابية في العالم
+            </p>
+            <div className="relative">
+              <div className="flex animate-scroll-rtl gap-16 items-center">
+                {[...Array(2)].map((_, setIdx) => (
+                  <div key={setIdx} className="flex gap-16 items-center shrink-0">
+                    <div className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity duration-300 shrink-0">
+                      <svg viewBox="0 0 256 210" className="h-8 w-auto" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M165.258 130.61l46.456-80.478h-92.913l46.457 80.478z" fill="#4285F4"/>
+                        <path d="M165.258 130.61L118.802 50.132H25.89l92.912 160.956 46.456-80.478z" fill="#34A853"/>
+                        <path d="M165.258 130.61l46.456 80.478L304.627 50.132H211.714L165.258 130.61z" fill="#FBBC04" transform="translate(-92.913)"/>
+                        <path d="M165.258 130.61L118.802 211.088l46.456-80.478z" fill="#EA4335"/>
+                      </svg>
+                      <span className="text-sm font-semibold whitespace-nowrap text-muted-foreground">Google Cloud</span>
+                    </div>
 
-      <section className="py-12 border-y bg-muted/20 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <p className="text-center text-sm text-muted-foreground mb-8 font-medium tracking-wide">
-            نعلّمك تقنيات أكبر مزودي الخدمات السحابية في العالم
-          </p>
-          <div className="relative">
-            <div className="flex animate-scroll-rtl gap-16 items-center">
-              {[...Array(2)].map((_, setIdx) => (
-                <div key={setIdx} className="flex gap-16 items-center shrink-0">
-                  <div className="flex items-center gap-3 opacity-70 hover:opacity-100 transition-opacity duration-300 shrink-0">
-                    <svg viewBox="0 0 256 210" className="h-10 w-auto" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M165.258 130.61l46.456-80.478h-92.913l46.457 80.478z" fill="#4285F4"/>
-                      <path d="M165.258 130.61L118.802 50.132H25.89l92.912 160.956 46.456-80.478z" fill="#34A853"/>
-                      <path d="M165.258 130.61l46.456 80.478L304.627 50.132H211.714L165.258 130.61z" fill="#FBBC04" transform="translate(-92.913)"/>
-                      <path d="M165.258 130.61L118.802 211.088l46.456-80.478z" fill="#EA4335"/>
-                    </svg>
-                    <span className="text-lg font-semibold whitespace-nowrap">Google Cloud</span>
-                  </div>
+                    <div className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity duration-300 shrink-0">
+                      <svg viewBox="0 0 96 96" className="h-8 w-auto" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M48.048 2.4L6 27.6v40.8l12 6.936V34.536L48.048 16.2l30.048 18.336v36.672L48.048 89.544l-17.76-10.848L18.288 85.2 48.048 103.2 90 78V37.2L48.048 2.4z" fill="#0089D6"/>
+                        <path d="M48.048 37.2L24 51.6v24l12 6.936V58.536l12.048-7.336L60.096 58.536V75.6l-12.048 7.344L36.048 75.6l-12 6.936L48.048 96 72 81.6V57.6L48.048 37.2z" fill="#0089D6"/>
+                      </svg>
+                      <span className="text-sm font-semibold whitespace-nowrap text-muted-foreground">Microsoft Azure</span>
+                    </div>
 
-                  <div className="flex items-center gap-3 opacity-70 hover:opacity-100 transition-opacity duration-300 shrink-0">
-                    <svg viewBox="0 0 96 96" className="h-10 w-auto" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M48.048 2.4L6 27.6v40.8l12 6.936V34.536L48.048 16.2l30.048 18.336v36.672L48.048 89.544l-17.76-10.848L18.288 85.2 48.048 103.2 90 78V37.2L48.048 2.4z" fill="#0089D6"/>
-                      <path d="M48.048 37.2L24 51.6v24l12 6.936V58.536l12.048-7.336L60.096 58.536V75.6l-12.048 7.344L36.048 75.6l-12 6.936L48.048 96 72 81.6V57.6L48.048 37.2z" fill="#0089D6"/>
-                    </svg>
-                    <span className="text-lg font-semibold whitespace-nowrap">Microsoft Azure</span>
-                  </div>
+                    <div className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity duration-300 shrink-0">
+                      <svg viewBox="0 0 256 153" className="h-7 w-auto" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M72.392 55.438c0-3.04.408-6.027 1.227-8.96a37.262 37.262 0 013.57-8.097 33.562 33.562 0 015.588-6.89 30.266 30.266 0 017.227-4.91 25.237 25.237 0 018.487-2.177 22.79 22.79 0 019.231.95 20.803 20.803 0 017.984 5.11c2.218 2.532 3.899 5.726 5.042 9.582h.136c1.604-5.932 4.458-10.575 8.564-13.93C133.553 22.76 138.466 21.08 144.183 21.08c4.37 0 8.27.87 11.698 2.61a25.673 25.673 0 018.766 7.118 32.684 32.684 0 015.514 10.622 40.146 40.146 0 011.906 12.451h-13.793c-.38-5.83-2.122-10.405-5.227-13.723-3.106-3.319-7.2-4.978-12.286-4.978-3.584 0-6.683.827-9.299 2.482-2.616 1.655-4.777 3.874-6.48 6.657-1.706 2.783-2.976 5.983-3.811 9.598-.835 3.616-1.253 7.368-1.253 11.257 0 3.89.418 7.642 1.253 11.257.835 3.616 2.105 6.815 3.81 9.598 1.704 2.783 3.865 5.002 6.481 6.657 2.616 1.655 5.715 2.482 9.3 2.482 5.084 0 9.179-1.66 12.285-4.978 3.105-3.318 4.847-7.893 5.227-13.723h13.793a40.146 40.146 0 01-1.906 12.45 32.684 32.684 0 01-5.514 10.623 25.673 25.673 0 01-8.766 7.118c-3.428 1.74-7.328 2.611-11.698 2.611-5.717 0-10.63-1.68-14.735-5.042-4.106-3.362-6.96-8.005-8.564-13.93h-.136c-1.143 3.855-2.824 7.05-5.042 9.582a20.803 20.803 0 01-7.984 5.11 22.79 22.79 0 01-9.231.95 25.237 25.237 0 01-8.487-2.177 30.266 30.266 0 01-7.227-4.91 33.562 33.562 0 01-5.588-6.89 37.262 37.262 0 01-3.57-8.097 33.816 33.816 0 01-1.227-8.96z" fill="#252F3E"/>
+                        <path d="M42.727 107.37C19.222 107.37 0 88.149 0 64.643 0 41.138 19.222 21.916 42.727 21.916S85.453 41.138 85.453 64.643c0 23.506-19.222 42.727-42.726 42.727z" fill="#F90"/>
+                      </svg>
+                      <span className="text-sm font-semibold whitespace-nowrap text-muted-foreground">Amazon AWS</span>
+                    </div>
 
-                  <div className="flex items-center gap-3 opacity-70 hover:opacity-100 transition-opacity duration-300 shrink-0">
-                    <svg viewBox="0 0 256 153" className="h-8 w-auto" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M72.392 55.438c0-3.04.408-6.027 1.227-8.96a37.262 37.262 0 013.57-8.097 33.562 33.562 0 015.588-6.89 30.266 30.266 0 017.227-4.91 25.237 25.237 0 018.487-2.177 22.79 22.79 0 019.231.95 20.803 20.803 0 017.984 5.11c2.218 2.532 3.899 5.726 5.042 9.582h.136c1.604-5.932 4.458-10.575 8.564-13.93C133.553 22.76 138.466 21.08 144.183 21.08c4.37 0 8.27.87 11.698 2.61a25.673 25.673 0 018.766 7.118 32.684 32.684 0 015.514 10.622 40.146 40.146 0 011.906 12.451h-13.793c-.38-5.83-2.122-10.405-5.227-13.723-3.106-3.319-7.2-4.978-12.286-4.978-3.584 0-6.683.827-9.299 2.482-2.616 1.655-4.777 3.874-6.48 6.657-1.706 2.783-2.976 5.983-3.811 9.598-.835 3.616-1.253 7.368-1.253 11.257 0 3.89.418 7.642 1.253 11.257.835 3.616 2.105 6.815 3.81 9.598 1.704 2.783 3.865 5.002 6.481 6.657 2.616 1.655 5.715 2.482 9.3 2.482 5.084 0 9.179-1.66 12.285-4.978 3.105-3.318 4.847-7.893 5.227-13.723h13.793a40.146 40.146 0 01-1.906 12.45 32.684 32.684 0 01-5.514 10.623 25.673 25.673 0 01-8.766 7.118c-3.428 1.74-7.328 2.611-11.698 2.611-5.717 0-10.63-1.68-14.735-5.042-4.106-3.362-6.96-8.005-8.564-13.93h-.136c-1.143 3.855-2.824 7.05-5.042 9.582a20.803 20.803 0 01-7.984 5.11 22.79 22.79 0 01-9.231.95 25.237 25.237 0 01-8.487-2.177 30.266 30.266 0 01-7.227-4.91 33.562 33.562 0 01-5.588-6.89 37.262 37.262 0 01-3.57-8.097 33.816 33.816 0 01-1.227-8.96z" fill="#252F3E"/>
-                      <path d="M42.727 107.37C19.222 107.37 0 88.149 0 64.643 0 41.138 19.222 21.916 42.727 21.916S85.453 41.138 85.453 64.643c0 23.506-19.222 42.727-42.726 42.727z" fill="#F90"/>
-                    </svg>
-                    <span className="text-lg font-semibold whitespace-nowrap">Amazon AWS</span>
-                  </div>
+                    <div className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity duration-300 shrink-0">
+                      <svg viewBox="0 0 128 128" className="h-8 w-auto" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M64 0C28.7 0 0 28.7 0 64s28.7 64 64 64 64-28.7 64-64S99.3 0 64 0z" fill="#326CE5"/>
+                        <path d="M98.1 76.6l-8.5-2.7c-.2-.8-.4-1.5-.7-2.3l5.1-7.3c.7-1 .6-2.4-.3-3.3l-6.9-6.9c-.9-.9-2.3-1-3.3-.3l-7.3 5.1c-.7-.3-1.5-.5-2.3-.7l-2.7-8.5c-.4-1.2-1.5-2-2.8-2h-9.8c-1.3 0-2.4.8-2.8 2l-2.7 8.5c-.8.2-1.5.4-2.3.7l-7.3-5.1c-1-.7-2.4-.6-3.3.3l-6.9 6.9c-.9.9-1 2.3-.3 3.3l5.1 7.3c-.3.7-.5 1.5-.7 2.3l-8.5 2.7c-1.2.4-2 1.5-2 2.8v9.8c0 1.3.8 2.4 2 2.8l8.5 2.7c.2.8.4 1.5.7 2.3l-5.1 7.3c-.7 1-.6 2.4.3 3.3l6.9 6.9c.9.9 2.3 1 3.3.3l7.3-5.1c.7.3 1.5.5 2.3.7l2.7 8.5c.4 1.2 1.5 2 2.8 2h9.8c1.3 0 2.4-.8 2.8-2l2.7-8.5c.8-.2 1.5-.4 2.3-.7l7.3 5.1c1 .7 2.4.6 3.3-.3l6.9-6.9c.9-.9 1-2.3.3-3.3l-5.1-7.3c.3-.7.5-1.5.7-2.3l8.5-2.7c1.2-.4 2-1.5 2-2.8v-9.8c0-1.3-.8-2.4-2-2.8zM64 95.3c-8.5 0-15.3-6.9-15.3-15.3S55.5 64.7 64 64.7 79.3 71.5 79.3 80 72.5 95.3 64 95.3z" fill="#fff"/>
+                      </svg>
+                      <span className="text-sm font-semibold whitespace-nowrap text-muted-foreground">Kubernetes</span>
+                    </div>
 
-                  <div className="flex items-center gap-3 opacity-70 hover:opacity-100 transition-opacity duration-300 shrink-0">
-                    <svg viewBox="0 0 128 128" className="h-10 w-auto" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M64 0C28.7 0 0 28.7 0 64s28.7 64 64 64 64-28.7 64-64S99.3 0 64 0z" fill="#326CE5"/>
-                      <path d="M98.1 76.6l-8.5-2.7c-.2-.8-.4-1.5-.7-2.3l5.1-7.3c.7-1 .6-2.4-.3-3.3l-6.9-6.9c-.9-.9-2.3-1-3.3-.3l-7.3 5.1c-.7-.3-1.5-.5-2.3-.7l-2.7-8.5c-.4-1.2-1.5-2-2.8-2h-9.8c-1.3 0-2.4.8-2.8 2l-2.7 8.5c-.8.2-1.5.4-2.3.7l-7.3-5.1c-1-.7-2.4-.6-3.3.3l-6.9 6.9c-.9.9-1 2.3-.3 3.3l5.1 7.3c-.3.7-.5 1.5-.7 2.3l-8.5 2.7c-1.2.4-2 1.5-2 2.8v9.8c0 1.3.8 2.4 2 2.8l8.5 2.7c.2.8.4 1.5.7 2.3l-5.1 7.3c-.7 1-.6 2.4.3 3.3l6.9 6.9c.9.9 2.3 1 3.3.3l7.3-5.1c.7.3 1.5.5 2.3.7l2.7 8.5c.4 1.2 1.5 2 2.8 2h9.8c1.3 0 2.4-.8 2.8-2l2.7-8.5c.8-.2 1.5-.4 2.3-.7l7.3 5.1c1 .7 2.4.6 3.3-.3l6.9-6.9c.9-.9 1-2.3.3-3.3l-5.1-7.3c.3-.7.5-1.5.7-2.3l8.5-2.7c1.2-.4 2-1.5 2-2.8v-9.8c0-1.3-.8-2.4-2-2.8zM64 95.3c-8.5 0-15.3-6.9-15.3-15.3S55.5 64.7 64 64.7 79.3 71.5 79.3 80 72.5 95.3 64 95.3z" fill="#fff"/>
-                    </svg>
-                    <span className="text-lg font-semibold whitespace-nowrap">Kubernetes</span>
-                  </div>
+                    <div className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity duration-300 shrink-0">
+                      <svg viewBox="0 0 128 128" className="h-8 w-auto" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M64 1.8C29.7 1.8 2 29.4 2 63.7c0 27.4 17.7 50.6 42.3 58.8 3.1.6 4.2-1.3 4.2-3v-10.5c-17.2 3.7-20.8-8.3-20.8-8.3-2.8-7.1-6.9-9-6.9-9-5.6-3.8.4-3.8.4-3.8 6.2.4 9.5 6.4 9.5 6.4 5.5 9.5 14.5 6.7 18 5.1.6-4 2.2-6.7 3.9-8.3-13.7-1.6-28.2-6.9-28.2-30.5 0-6.7 2.4-12.2 6.4-16.5-.6-1.6-2.8-7.8.6-16.3 0 0 5.2-1.7 17 6.3 4.9-1.4 10.2-2 15.5-2.1 5.2 0 10.5.7 15.5 2.1 11.8-8 17-6.3 17-6.3 3.4 8.5 1.3 14.7.6 16.3 4 4.3 6.4 9.8 6.4 16.5 0 23.7-14.5 28.9-28.2 30.4 2.2 1.9 4.2 5.7 4.2 11.5v17c0 1.7 1.1 3.6 4.3 3 24.5-8.2 42.2-31.4 42.2-58.8C126 29.4 98.3 1.8 64 1.8z" fill="#333"/>
+                      </svg>
+                      <span className="text-sm font-semibold whitespace-nowrap text-muted-foreground">GitHub</span>
+                    </div>
 
-                  <div className="flex items-center gap-3 opacity-70 hover:opacity-100 transition-opacity duration-300 shrink-0">
-                    <svg viewBox="0 0 128 128" className="h-10 w-auto" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M64 1.8C29.7 1.8 2 29.4 2 63.7c0 27.4 17.7 50.6 42.3 58.8 3.1.6 4.2-1.3 4.2-3v-10.5c-17.2 3.7-20.8-8.3-20.8-8.3-2.8-7.1-6.9-9-6.9-9-5.6-3.8.4-3.8.4-3.8 6.2.4 9.5 6.4 9.5 6.4 5.5 9.5 14.5 6.7 18 5.1.6-4 2.2-6.7 3.9-8.3-13.7-1.6-28.2-6.9-28.2-30.5 0-6.7 2.4-12.2 6.4-16.5-.6-1.6-2.8-7.8.6-16.3 0 0 5.2-1.7 17 6.3 4.9-1.4 10.2-2 15.5-2.1 5.2 0 10.5.7 15.5 2.1 11.8-8 17-6.3 17-6.3 3.4 8.5 1.3 14.7.6 16.3 4 4.3 6.4 9.8 6.4 16.5 0 23.7-14.5 28.9-28.2 30.4 2.2 1.9 4.2 5.7 4.2 11.5v17c0 1.7 1.1 3.6 4.3 3 24.5-8.2 42.2-31.4 42.2-58.8C126 29.4 98.3 1.8 64 1.8z" fill="#333"/>
-                    </svg>
-                    <span className="text-lg font-semibold whitespace-nowrap">GitHub</span>
+                    <div className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity duration-300 shrink-0">
+                      <svg viewBox="0 0 128 128" className="h-8 w-auto" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M80.561 53.398l-7.543 23.336H58.96l-7.543-23.336L64.009 32.48z" fill="#1A73E8"/>
+                        <path d="M80.561 53.398L64.009 32.48H36.785L51.417 76.734z" fill="#EA4335"/>
+                        <path d="M51.417 76.734H73.018l7.543-23.336L64.009 32.48z" fill="#4285F4"/>
+                        <path d="M51.417 76.734l-14.632-44.254L16 76.734h35.417z" fill="#34A853"/>
+                        <path d="M76.582 76.734l14.632 18.786L112 76.734H76.582z" fill="#FBBC04"/>
+                        <path d="M51.417 76.734L36.785 95.52 64.009 128l27.224-32.48H76.582l-12.573-18.786z" fill="#0D652D"/>
+                      </svg>
+                      <span className="text-sm font-semibold whitespace-nowrap text-muted-foreground">Terraform</span>
+                    </div>
                   </div>
-
-                  <div className="flex items-center gap-3 opacity-70 hover:opacity-100 transition-opacity duration-300 shrink-0">
-                    <svg viewBox="0 0 128 128" className="h-10 w-auto" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M80.561 53.398l-7.543 23.336H58.96l-7.543-23.336L64.009 32.48z" fill="#1A73E8"/>
-                      <path d="M80.561 53.398L64.009 32.48H36.785L51.417 76.734z" fill="#EA4335"/>
-                      <path d="M51.417 76.734H73.018l7.543-23.336L64.009 32.48z" fill="#4285F4"/>
-                      <path d="M51.417 76.734l-14.632-44.254L16 76.734h35.417z" fill="#34A853"/>
-                      <path d="M76.582 76.734l14.632 18.786L112 76.734H76.582z" fill="#FBBC04"/>
-                      <path d="M51.417 76.734L36.785 95.52 64.009 128l27.224-32.48H76.582l-12.573-18.786z" fill="#0D652D"/>
-                    </svg>
-                    <span className="text-lg font-semibold whitespace-nowrap">Terraform</span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+      {courses && courses.filter((c: CourseWithInstructor) => c.isSpecialOffer).length > 0 && (
+        <section className="py-16 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-red-500/10 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500" />
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between mb-10">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
+                  <Sparkles className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-3xl md:text-4xl font-bold">عروض خاصة</h3>
+                  <p className="text-muted-foreground">استفد من أفضل العروض على الدورات المميزة</p>
+                </div>
+              </div>
+              <Link href="/courses">
+                <Button variant="outline" className="gap-1 border-amber-500/50 text-amber-600 hover:bg-amber-500/10">
+                  عرض الكل
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {courses
+                .filter((c: CourseWithInstructor) => c.isSpecialOffer)
+                .slice(0, 3)
+                .map((course: CourseWithInstructor) => (
+                  <Link key={course.id} href={`/courses/${course.id}`}>
+                    <Card className="overflow-hidden hover-elevate group cursor-pointer border-amber-500/30 relative">
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 z-10" />
+                      <div className="relative h-48 overflow-hidden">
+                        <img 
+                          src={course.image || "https://placehold.co/800x400/4A88FF/FFFFFF?text=Course"} 
+                          alt={course.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                        <div className="absolute top-3 right-3">
+                          <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 gap-1">
+                            <Sparkles className="h-3 w-3" />
+                            عرض خاص
+                          </Badge>
+                        </div>
+                        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm rounded-lg p-2">
+                          <div className="text-lg font-bold text-foreground">{course.price} د.أ</div>
+                          {course.originalPrice && (
+                            <div className="text-xs text-red-500 line-through">{course.originalPrice} د.أ</div>
+                          )}
+                        </div>
+                        {course.originalPrice && course.price && (
+                          <div className="absolute bottom-3 left-3 bg-red-500 text-white rounded-full px-2 py-1 text-xs font-bold">
+                            {Math.round((1 - course.price / course.originalPrice) * 100)}% خصم
+                          </div>
+                        )}
+                      </div>
+                      <CardHeader className="pb-2">
+                        <h4 className="text-lg font-bold line-clamp-2 group-hover:text-amber-600 transition-colors">
+                          {course.title}
+                        </h4>
+                        <p className="text-sm text-muted-foreground line-clamp-2">{course.description}</p>
+                      </CardHeader>
+                      <CardContent className="pb-4">
+                        <div className="flex items-center justify-between text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3 text-amber-500" />
+                            {course.duration}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <BookOpen className="h-3 w-3 text-amber-500" />
+                            {course.lessonsCount} درس
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                            {course.rating}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {user && (
         <section className="py-16 bg-muted/30">

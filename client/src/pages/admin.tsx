@@ -21,7 +21,8 @@ import {
   FileText,
   ShoppingCart,
   Heart,
-  GraduationCap
+  GraduationCap,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -951,9 +952,17 @@ export default function AdminDashboard() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant={course.isPublished ? "default" : "secondary"} className={course.isPublished ? "bg-chart-4" : ""}>
-                              {course.isPublished ? "منشور" : "مسودة"}
-                            </Badge>
+                            <div className="flex flex-col gap-1">
+                              <Badge variant={course.isPublished ? "default" : "secondary"} className={course.isPublished ? "bg-chart-4" : ""}>
+                                {course.isPublished ? "منشور" : "مسودة"}
+                              </Badge>
+                              {course.isSpecialOffer && (
+                                <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
+                                  <Sparkles className="h-3 w-3 ml-1" />
+                                  عرض خاص
+                                </Badge>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell>
                             <DropdownMenu>
@@ -971,6 +980,15 @@ export default function AdminDashboard() {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => openEditCourse(course)}>
                                   <Edit className="h-4 w-4 ml-2" /> تعديل
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => {
+                                  updateCourseMutation.mutate({ 
+                                    id: course.id, 
+                                    data: { isSpecialOffer: !course.isSpecialOffer } 
+                                  });
+                                }}>
+                                  <Sparkles className="h-4 w-4 ml-2" />
+                                  {course.isSpecialOffer ? "إلغاء العرض الخاص" : "تعيين كعرض خاص"}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
                                   className="text-destructive"

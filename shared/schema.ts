@@ -52,6 +52,7 @@ export const courses = pgTable("courses", {
   skills: text("skills").array(),
   difficulty: integer("difficulty").notNull().default(1),
   isPublished: boolean("is_published").notNull().default(false),
+  isSpecialOffer: boolean("is_special_offer").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
