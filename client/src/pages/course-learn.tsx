@@ -114,6 +114,9 @@ export default function CourseLearn() {
     },
   });
 
+  // Drive embed state
+  const [driveEmbedUrl, setDriveEmbedUrl] = useState<string | null>(null);
+
   // Review state
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewComment, setReviewComment] = useState("");
@@ -254,7 +257,31 @@ export default function CourseLearn() {
     setQuizAnswers({});
     setQuizSubmitted(false);
     setQuizResult(null);
+    setDriveEmbedUrl(null);
   }, [currentLessonId]);
+
+  // Fetch Drive embed URL when lesson has a drive video
+  useEffect(() => {
+    const lesson = allLessons.find(l => l.id === currentLessonId);
+    if (!lesson || !user || !currentLessonId) return;
+    if (lesson.videoUrl !== "drive-protected") return;
+    
+    let cancelled = false;
+    fetch(`/api/lessons/${currentLessonId}/drive-embed`, {
+      headers: { "X-User-Id": user.id }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Failed");
+        return res.json();
+      })
+      .then(data => {
+        if (!cancelled) setDriveEmbedUrl(data.embedUrl);
+      })
+      .catch(() => {
+        if (!cancelled) setDriveEmbedUrl(null);
+      });
+    return () => { cancelled = true; };
+  }, [currentLessonId, user, allLessons]);
 
   const hasPassed = quizAttempts?.some(a => a.passed) || false;
 
@@ -264,22 +291,6 @@ export default function CourseLearn() {
   // Calculate progress
   const completedCount = lessonProgress?.filter(p => allLessons.some(l => l.id === p.lessonId) && p.isCompleted).length || 0;
   const progressPercent = allLessons.length > 0 ? (completedCount / allLessons.length) * 100 : 0;
-
-  const videoInfo = currentLesson?.videoUrl ? extractVideoId(currentLesson.videoUrl) : null;
-  const isUploadedVideo = currentLesson?.videoUrl?.startsWith("/api/videos/stream/");
-  const isDriveVideo = videoInfo?.type === "drive";
-
-  const { data: driveEmbedData } = useQuery<{ embedUrl: string }>({
-    queryKey: ["/api/lessons", currentLessonId, "drive-embed"],
-    queryFn: async () => {
-      const res = await fetch(`/api/lessons/${currentLessonId}/drive-embed`, {
-        headers: { "X-User-Id": user?.id || "" }
-      });
-      if (!res.ok) throw new Error("Failed to fetch embed URL");
-      return res.json();
-    },
-    enabled: !!currentLessonId && !!user && isDriveVideo,
-  });
 
   // Loading state
   if (courseLoading || enrollmentLoading) {
@@ -331,6 +342,9 @@ export default function CourseLearn() {
       </div>
     );
   }
+
+  const videoInfo = currentLesson?.videoUrl && currentLesson.videoUrl !== "drive-protected" ? extractVideoId(currentLesson.videoUrl) : null;
+  const isUploadedVideo = currentLesson?.videoUrl?.startsWith("/api/videos/stream/");
 
   return (
     <div className="min-h-screen pt-16">
@@ -385,8 +399,8 @@ export default function CourseLearn() {
                   allowFullScreen
                   data-testid="video-player"
                 />
-              ) : videoInfo.type === "drive" ? (
-                driveEmbedData?.embedUrl ? (
+              ) : currentLesson.videoUrl === "drive-protected" ? (
+                driveEmbedUrl ? (
                   <div
                     className="relative w-full h-full select-none"
                     onContextMenu={(e) => e.preventDefault()}
@@ -400,7 +414,7 @@ export default function CourseLearn() {
                   >
                     <iframe
                       className="w-full h-full"
-                      src={driveEmbedData.embedUrl}
+                      src={driveEmbedUrl}
                       title={currentLesson.title}
                       allow="autoplay; encrypted-media"
                       allowFullScreen

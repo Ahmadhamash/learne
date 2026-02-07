@@ -2150,7 +2150,7 @@ export async function registerRoutes(
         return res.status(400).json({ error: "ليس رابط Drive" });
       }
 
-      const enrollments = await storage.getUserEnrollments(userId);
+      const enrollments = await storage.getEnrollmentsByUser(userId);
       const isEnrolled = enrollments.some(e => e.courseId === lesson.courseId && e.status === "approved");
       const user = await storage.getUser(userId);
       const isAdminOrInstructor = user && (user.role === "admin" || user.role === "instructor");
