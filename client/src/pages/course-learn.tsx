@@ -353,7 +353,44 @@ export default function CourseLearn() {
         <div className="flex-1 flex flex-col">
           {/* Video Player */}
           <div className="bg-black aspect-video w-full">
-            {currentLesson?.videoUrl && isUploadedVideo ? (
+            {currentLesson?.videoUrl === "drive-protected" ? (
+              driveEmbedUrl ? (
+                <div
+                  className="relative w-full h-full select-none"
+                  onContextMenu={(e) => e.preventDefault()}
+                  onCopy={(e) => e.preventDefault()}
+                  onCut={(e) => e.preventDefault()}
+                  style={{ 
+                    WebkitUserSelect: "none", 
+                    userSelect: "none",
+                    WebkitTouchCallout: "none",
+                  }}
+                >
+                  <iframe
+                    className="w-full h-full"
+                    src={driveEmbedUrl}
+                    title={currentLesson.title}
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                    sandbox="allow-scripts allow-same-origin"
+                    referrerPolicy="no-referrer"
+                    data-testid="video-player"
+                    style={{ border: "none" }}
+                  />
+                  <div
+                    className="absolute top-0 right-0 w-14 h-14 z-10"
+                    style={{ background: "rgba(0,0,0,0.9)" }}
+                  />
+                </div>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white">
+                  <div className="text-center">
+                    <Loader2 className="h-10 w-10 mx-auto mb-3 animate-spin opacity-60" />
+                    <p>جاري تحميل الفيديو...</p>
+                  </div>
+                </div>
+              )
+            ) : currentLesson?.videoUrl && isUploadedVideo ? (
               <div
                 className="relative w-full h-full select-none"
                 onContextMenu={(e) => e.preventDefault()}
@@ -374,10 +411,7 @@ export default function CourseLearn() {
                 </video>
                 <div
                   className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background: "transparent",
-                    zIndex: 1,
-                  }}
+                  style={{ background: "transparent", zIndex: 1 }}
                 />
               </div>
             ) : currentLesson?.videoUrl && videoInfo?.id ? (
@@ -399,43 +433,6 @@ export default function CourseLearn() {
                   allowFullScreen
                   data-testid="video-player"
                 />
-              ) : currentLesson.videoUrl === "drive-protected" ? (
-                driveEmbedUrl ? (
-                  <div
-                    className="relative w-full h-full select-none"
-                    onContextMenu={(e) => e.preventDefault()}
-                    onCopy={(e) => e.preventDefault()}
-                    onCut={(e) => e.preventDefault()}
-                    style={{ 
-                      WebkitUserSelect: "none", 
-                      userSelect: "none",
-                      WebkitTouchCallout: "none",
-                    }}
-                  >
-                    <iframe
-                      className="w-full h-full"
-                      src={driveEmbedUrl}
-                      title={currentLesson.title}
-                      allow="autoplay; encrypted-media"
-                      allowFullScreen
-                      sandbox="allow-scripts allow-same-origin"
-                      referrerPolicy="no-referrer"
-                      data-testid="video-player"
-                      style={{ border: "none" }}
-                    />
-                    <div
-                      className="absolute top-0 right-0 w-14 h-14 z-10"
-                      style={{ background: "rgba(0,0,0,0.9)" }}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white">
-                    <div className="text-center">
-                      <Loader2 className="h-10 w-10 mx-auto mb-3 animate-spin opacity-60" />
-                      <p>جاري تحميل الفيديو...</p>
-                    </div>
-                  </div>
-                )
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-white">
                   <p>صيغة الفيديو غير مدعومة</p>
