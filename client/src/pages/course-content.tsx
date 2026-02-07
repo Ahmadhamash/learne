@@ -246,9 +246,14 @@ export default function CourseContentPage() {
     mutationFn: async (id: string) => {
       return apiRequest("DELETE", `${apiBase}/lessons/${id}`, {});
     },
-    onSuccess: () => {
+    onSuccess: (_data, deletedId) => {
       queryClient.invalidateQueries({ queryKey: [apiBase, "courses", courseId, "content"] });
       setDeleteTarget(null);
+      if (editingLesson?.id === deletedId) {
+        setEditingLesson(null);
+        setLessonModalOpen(false);
+        resetLessonForm();
+      }
       toast({ title: "تم حذف الدرس بنجاح" });
     },
     onError: (error: any) => {
