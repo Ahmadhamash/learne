@@ -48,7 +48,8 @@ script/          - Build scripts
 - **Homepage Cloud Logos**: Animated scrolling logos for AWS, Azure, Google Cloud, Kubernetes, GitHub, Terraform
 
 ## Key Features
-- **Video Protection**: HTML5 controls disable download, context menu, PiP; CSS overlay prevents screen recording
+- **Google Drive Video Support**: Instructors can paste Drive links for lessons; embed URL served securely via `/api/lessons/:id/drive-embed` (requires enrollment); Drive URLs sanitized from student-facing APIs (replaced with "drive-protected")
+- **Video Protection**: HTML5 controls disable download, context menu, PiP; CSS overlay prevents screen recording; Drive videos: no-select, no-context-menu, download button overlay
 - **Role-based Access**: Admin, Instructor, Student with separate API routes and UI
 - **Instructor Dashboard**: Manage courses (CRUD + content), labs (CRUD + sections), view submissions
 - **Uploads**: Stored in `/uploads/videos/` with UUID filenames

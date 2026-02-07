@@ -33,8 +33,10 @@ import { useAuth } from "@/lib/auth-context";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { CourseWithContent, Enrollment, LessonProgress, Lab, LessonReviewWithUser, LessonReview, QuizWithQuestions, QuizAttempt } from "@shared/schema";
 
-function extractVideoId(url: string): { type: "youtube" | "vimeo" | "unknown"; id: string | null } {
+function extractVideoId(url: string): { type: "youtube" | "vimeo" | "drive" | "unknown"; id: string | null } {
   if (!url) return { type: "unknown", id: null };
+  
+  if (url === "drive-protected") return { type: "drive", id: "protected" };
   
   // YouTube
   const youtubeMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -43,6 +45,10 @@ function extractVideoId(url: string): { type: "youtube" | "vimeo" | "unknown"; i
   // Vimeo
   const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
   if (vimeoMatch) return { type: "vimeo", id: vimeoMatch[1] };
+  
+  // Google Drive
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (driveMatch) return { type: "drive", id: driveMatch[1] };
   
   return { type: "unknown", id: null };
 }
@@ -312,6 +318,19 @@ export default function CourseLearn() {
 
   const videoInfo = currentLesson?.videoUrl ? extractVideoId(currentLesson.videoUrl) : null;
   const isUploadedVideo = currentLesson?.videoUrl?.startsWith("/api/videos/stream/");
+  const isDriveVideo = videoInfo?.type === "drive";
+
+  const { data: driveEmbedData } = useQuery<{ embedUrl: string }>({
+    queryKey: ["/api/lessons", currentLessonId, "drive-embed"],
+    queryFn: async () => {
+      const res = await fetch(`/api/lessons/${currentLessonId}/drive-embed`, {
+        headers: { "X-User-Id": user?.id || "" }
+      });
+      if (!res.ok) throw new Error("Failed to fetch embed URL");
+      return res.json();
+    },
+    enabled: !!currentLessonId && !!user && isDriveVideo,
+  });
 
   return (
     <div className="min-h-screen pt-16">
@@ -366,6 +385,43 @@ export default function CourseLearn() {
                   allowFullScreen
                   data-testid="video-player"
                 />
+              ) : videoInfo.type === "drive" ? (
+                driveEmbedData?.embedUrl ? (
+                  <div
+                    className="relative w-full h-full select-none"
+                    onContextMenu={(e) => e.preventDefault()}
+                    onCopy={(e) => e.preventDefault()}
+                    onCut={(e) => e.preventDefault()}
+                    style={{ 
+                      WebkitUserSelect: "none", 
+                      userSelect: "none",
+                      WebkitTouchCallout: "none",
+                    }}
+                  >
+                    <iframe
+                      className="w-full h-full"
+                      src={driveEmbedData.embedUrl}
+                      title={currentLesson.title}
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                      sandbox="allow-scripts allow-same-origin"
+                      referrerPolicy="no-referrer"
+                      data-testid="video-player"
+                      style={{ border: "none" }}
+                    />
+                    <div
+                      className="absolute top-0 right-0 w-14 h-14 z-10"
+                      style={{ background: "rgba(0,0,0,0.9)" }}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white">
+                    <div className="text-center">
+                      <Loader2 className="h-10 w-10 mx-auto mb-3 animate-spin opacity-60" />
+                      <p>جاري تحميل الفيديو...</p>
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-white">
                   <p>صيغة الفيديو غير مدعومة</p>

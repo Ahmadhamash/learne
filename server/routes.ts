@@ -277,7 +277,19 @@ export async function registerRoutes(
       if (!course) {
         return res.status(404).json({ error: "الدورة غير موجودة" });
       }
-      res.json(course);
+      const sanitizedCourse = {
+        ...course,
+        sections: course.sections.map((section: any) => ({
+          ...section,
+          lessons: section.lessons.map((lesson: any) => ({
+            ...lesson,
+            videoUrl: lesson.videoUrl && lesson.videoUrl.includes("drive.google.com")
+              ? "drive-protected"
+              : lesson.videoUrl,
+          })),
+        })),
+      };
+      res.json(sanitizedCourse);
     } catch (error) {
       res.status(500).json({ error: "خطأ في الخادم" });
     }
@@ -287,7 +299,13 @@ export async function registerRoutes(
   app.get("/api/courses/:courseId/lessons", async (req, res) => {
     try {
       const lessons = await storage.getLessonsByCourse(req.params.courseId);
-      res.json(lessons);
+      const sanitizedLessons = lessons.map((lesson: any) => ({
+        ...lesson,
+        videoUrl: lesson.videoUrl && lesson.videoUrl.includes("drive.google.com")
+          ? "drive-protected"
+          : lesson.videoUrl,
+      }));
+      res.json(sanitizedLessons);
     } catch (error) {
       res.status(500).json({ error: "خطأ في الخادم" });
     }
@@ -2109,6 +2127,40 @@ export async function registerRoutes(
     try {
       await storage.deleteQuizQuestion(req.params.questionId);
       res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "خطأ في الخادم" });
+    }
+  });
+
+  // Secure Drive video embed endpoint - returns embed URL only for enrolled users
+  app.get("/api/lessons/:lessonId/drive-embed", async (req: Request, res: Response) => {
+    try {
+      const userId = req.headers["x-user-id"] as string;
+      if (!userId) {
+        return res.status(401).json({ error: "غير مصرح" });
+      }
+
+      const lesson = await storage.getLesson(req.params.lessonId);
+      if (!lesson || !lesson.videoUrl) {
+        return res.status(404).json({ error: "الدرس غير موجود" });
+      }
+
+      const driveMatch = lesson.videoUrl.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (!driveMatch) {
+        return res.status(400).json({ error: "ليس رابط Drive" });
+      }
+
+      const enrollments = await storage.getUserEnrollments(userId);
+      const isEnrolled = enrollments.some(e => e.courseId === lesson.courseId && e.status === "approved");
+      const user = await storage.getUser(userId);
+      const isAdminOrInstructor = user && (user.role === "admin" || user.role === "instructor");
+
+      if (!isEnrolled && !isAdminOrInstructor) {
+        return res.status(403).json({ error: "يجب التسجيل في الدورة" });
+      }
+
+      const fileId = driveMatch[1];
+      res.json({ embedUrl: `https://drive.google.com/file/d/${fileId}/preview` });
     } catch (error) {
       res.status(500).json({ error: "خطأ في الخادم" });
     }

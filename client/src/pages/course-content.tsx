@@ -862,15 +862,21 @@ export default function CourseContentPage() {
                 </div>
                 {!videoFile && (
                   <div>
-                    <Label className="text-xs text-muted-foreground">أو أدخل رابط فيديو (YouTube / Vimeo)</Label>
+                    <Label className="text-xs text-muted-foreground">أو أدخل رابط فيديو (YouTube / Vimeo / Google Drive)</Label>
                     <Input
                       value={lessonForm.videoUrl}
                       onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
-                      placeholder="https://youtube.com/watch?v=..."
+                      placeholder="https://drive.google.com/file/d/... أو رابط YouTube"
                       dir="ltr"
                       data-testid="input-lesson-video"
                       className="mt-1"
                     />
+                    {lessonForm.videoUrl && lessonForm.videoUrl.includes("drive.google.com") && (
+                      <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                        <CheckCircle2 className="h-3 w-3" />
+                        رابط Google Drive - سيتم حماية الفيديو من التحميل والنسخ
+                      </p>
+                    )}
                   </div>
                 )}
                 {lessonForm.videoUrl && lessonForm.videoUrl.startsWith("/api/videos/stream/") && !videoFile && (
