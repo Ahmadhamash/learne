@@ -265,6 +265,22 @@ export default function CourseLearn() {
   const completedCount = lessonProgress?.filter(p => allLessons.some(l => l.id === p.lessonId) && p.isCompleted).length || 0;
   const progressPercent = allLessons.length > 0 ? (completedCount / allLessons.length) * 100 : 0;
 
+  const videoInfo = currentLesson?.videoUrl ? extractVideoId(currentLesson.videoUrl) : null;
+  const isUploadedVideo = currentLesson?.videoUrl?.startsWith("/api/videos/stream/");
+  const isDriveVideo = videoInfo?.type === "drive";
+
+  const { data: driveEmbedData } = useQuery<{ embedUrl: string }>({
+    queryKey: ["/api/lessons", currentLessonId, "drive-embed"],
+    queryFn: async () => {
+      const res = await fetch(`/api/lessons/${currentLessonId}/drive-embed`, {
+        headers: { "X-User-Id": user?.id || "" }
+      });
+      if (!res.ok) throw new Error("Failed to fetch embed URL");
+      return res.json();
+    },
+    enabled: !!currentLessonId && !!user && isDriveVideo,
+  });
+
   // Loading state
   if (courseLoading || enrollmentLoading) {
     return (
@@ -315,22 +331,6 @@ export default function CourseLearn() {
       </div>
     );
   }
-
-  const videoInfo = currentLesson?.videoUrl ? extractVideoId(currentLesson.videoUrl) : null;
-  const isUploadedVideo = currentLesson?.videoUrl?.startsWith("/api/videos/stream/");
-  const isDriveVideo = videoInfo?.type === "drive";
-
-  const { data: driveEmbedData } = useQuery<{ embedUrl: string }>({
-    queryKey: ["/api/lessons", currentLessonId, "drive-embed"],
-    queryFn: async () => {
-      const res = await fetch(`/api/lessons/${currentLessonId}/drive-embed`, {
-        headers: { "X-User-Id": user?.id || "" }
-      });
-      if (!res.ok) throw new Error("Failed to fetch embed URL");
-      return res.json();
-    },
-    enabled: !!currentLessonId && !!user && isDriveVideo,
-  });
 
   return (
     <div className="min-h-screen pt-16">
