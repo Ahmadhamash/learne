@@ -638,22 +638,10 @@ export default function Home() {
             <div className="flex items-center justify-center gap-2 mb-4">
               {siteLogo ? (
                 <img 
-<<<<<<< HEAD
-                  src={siteLogo} 
-                  alt="سحابة الأردن" 
-                  className="h-10 w-auto max-w-[150px] object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                    const fallback = (e.target as HTMLImageElement).nextElementSibling;
-                    if (fallback) (fallback as HTMLElement).style.display = 'flex';
-                  }}
-                />
-=======
   src="/attached_assets/image_1770377134582.png" 
   alt="سحابة الأردن" 
   className="h-10 w-auto max-w-[150px] object-contain"
 />
->>>>>>> 55894887a31cefbf9298f4ff32b2af7e9b9639d6
               ) : null}
               <div className={`w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center ${siteLogo ? 'hidden' : ''}`}>
                 <Cloud className="h-5 w-5 text-white" />
