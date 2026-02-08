@@ -100,17 +100,18 @@ export function Header() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-3">
-            {siteLogo ? (
-              <img 
-                src="\favicon.png" 
-                alt="سحابة الأردن" 
-                className="h-10 w-auto max-w-[150px] object-contain"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                  const fallback = (e.target as HTMLImageElement).nextElementSibling;
-                  if (fallback) (fallback as HTMLElement).style.display = 'flex';
-                }}
-              />
+  {/* هنا يتم عرض اللوجو */}
+  {siteLogo ? (
+    <img 
+      src="/favicon.png"   /* <--- عدل هذا السطر باسم صورتك الجديدة */
+      alt="سحابة الأردن" 
+      className="h-12 w-auto object-contain" /* يمكنك زيادة h-10 إلى h-12 أو h-14 لتكبير اللوجو */
+      onError={(e) => {
+        (e.target as HTMLImageElement).style.display = 'none';
+        const fallback = (e.target as HTMLImageElement).nextElementSibling;
+        if (fallback) (fallback as HTMLElement).style.display = 'flex';
+      }}
+    />
             ) : null}
             <div className={`w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center ${siteLogo ? 'hidden' : ''}`}>
               <Cloud className="h-5 w-5 text-white" />
