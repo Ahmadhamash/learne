@@ -141,14 +141,7 @@ export default function Login() {
             </Link>
           </div>
 
-          <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-            <p className="text-xs text-muted-foreground text-center mb-2">حسابات تجريبية:</p>
-            <div className="text-xs space-y-1">
-              <p><strong>Admin:</strong> admin / admin123</p>
-              <p><strong>Instructor:</strong> ahmad_instructor / instructor123</p>
-              <p><strong>Student:</strong> mohammad / student123</p>
-            </div>
-          </div>
+          
         </CardContent>
       </Card>
     </div>
