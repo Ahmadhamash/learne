@@ -102,7 +102,7 @@ export function Header() {
           <Link href="/" className="flex items-center gap-3">
             {siteLogo ? (
               <img 
-                src={siteLogo} 
+                src="\favicon.png" 
                 alt="سحابة الأردن" 
                 className="h-10 w-auto max-w-[150px] object-contain"
                 onError={(e) => {
