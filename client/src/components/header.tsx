@@ -100,13 +100,13 @@ export function Header() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-3">
-  {/* هنا يتم عرض اللوجو */}
-  {siteLogo ? (
+    {/* قمنا بإزالة الشرط {siteLogo ? ...} مؤقتاً لنجبر الصورة على الظهور */}
     <img 
-      src="client\public\favicon.png"   /* <--- عدل هذا السطر باسم صورتك الجديدة */
+      src="/favicon.png" 
       alt="سحابة الأردن" 
-      className="h-12 w-auto object-contain" /* يمكنك زيادة h-10 إلى h-12 أو h-14 لتكبير اللوجو */
+      className="h-12 w-auto object-contain"
       onError={(e) => {
+        // كود احتياطي في حال فشل تحميل الصورة
         (e.target as HTMLImageElement).style.display = 'none';
         const fallback = (e.target as HTMLImageElement).nextElementSibling;
         if (fallback) (fallback as HTMLElement).style.display = 'flex';
