@@ -103,7 +103,7 @@ export function Header() {
   {/* هنا يتم عرض اللوجو */}
   {siteLogo ? (
     <img 
-      src="/favicon.png"   /* <--- عدل هذا السطر باسم صورتك الجديدة */
+      src="client\public\favicon.png"   /* <--- عدل هذا السطر باسم صورتك الجديدة */
       alt="سحابة الأردن" 
       className="h-12 w-auto object-contain" /* يمكنك زيادة h-10 إلى h-12 أو h-14 لتكبير اللوجو */
       onError={(e) => {
